@@ -10,25 +10,38 @@ from selenium.webdriver.chrome.options import Options
 
 # --- ページ設定 ---
 st.set_page_config(
-    page_title="しむら小児科予約エージェント",
-    page_icon="🏥",
+    page_title="しむら小児科 事前予約アプリ",
+    page_icon="🐼",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
 # --- CSS (デザイン調整) ---
 st.markdown("""
-    <style>
-    .stApp { background-color: #ffffff; color: #333333; }
-    div.stButton > button:first-child {
-        background-color: #f6adad; color: white; border: none;
-        border-radius: 5px; font-weight: bold; padding: 0.5em 2em;
+<style>
+    /* 全体の背景と文字色を明るく */
+    .stApp {
+        background-color: #ffffff;
+        color: #333333;
     }
-    div.stButton > button:active { background-color: #e09090; }
-    h1, h2, h3 { color: #4CAF50; }
-    .status-box {
-        padding: 1rem; border-radius: 10px; margin-bottom: 1rem;
-        background-color: #f0f2f6; border-left: 5px solid #4CAF50;
+    /* ボタンの色をサイトの緑/ピンクに合わせる */
+    div.stButton > button:first-child {
+        background-color: #f6adad; /* ピンク */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    div.stButton > button:active {
+        background-color: #e09090;
+    }
+    /* ヘッダーの色 */
+    h1, h2, h3 {
+        color: #4CAF50; /* 緑 */
+    }
+    /* ラジオボタンのアクセント */
+    div[role="radiogroup"] > label > div:first-child {
+        background-color: #4CAF50 !important;
     }
     </style>
 """, unsafe_allow_html=True)

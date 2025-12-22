@@ -22,12 +22,12 @@ st.markdown("""
     /* 全体の背景と文字色を明るく */
     .stApp {
         background-color: #ffffff;
-        color: #444444;
+        color: #C0C0C0;
     }
     /* ボタンの色をサイトの緑/ピンクに合わせる */
     div.stButton > button:first-child {
         background-color: #f6adad; /* ピンク */
-        color: white;
+        color: #C0C0C0;
         border: none;
         border-radius: 5px;
         font-weight: bold;

@@ -189,12 +189,12 @@ if st.button("🌙 おやすみ前セット（待機開始）", type="primary"):
         final_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(., '予 約')]")))
         
         # ★本番用: コメントアウトを外してください★
-        final_btn.click()
+        ＃ final_btn.click()
         
         st.balloons()
-        st.success("🏆 予約完了！")
+        st.success("🏆 予約完了！（シミュレーション完了）")
         time.sleep(2)
-        st.image(driver.get_screenshot_as_png(), caption="結果画面")
+        st.image(driver.get_screenshot_as_png(), caption="予約完了画面（想定）")
 
     except Exception as e:
         st.error(f"エラー: {e}")

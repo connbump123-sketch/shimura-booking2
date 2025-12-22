@@ -188,8 +188,8 @@ if st.button("🌙 おやすみ前セット（待機開始）", type="primary"):
         st.write("🔥 最終確定ボタンを押します！")
         final_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(., '予 約')]")))
         
-        # ★本番用: コメントアウトを外してください★
-        ＃ final_btn.click()
+        # 本番では次の行のコメントアウトを外す！
+        # final_btn.click()
         
         st.balloons()
         st.success("🏆 予約完了！（シミュレーション完了）")

@@ -27,7 +27,7 @@ st.markdown("""
     /* ボタンの色をサイトの緑/ピンクに合わせる */
     div.stButton > button:first-child {
         background-color: #f6adad; /* ピンク */
-        color: #77787B;
+        color: #ffffff;
         border: none;
         border-radius: 5px;
         font-weight: bold;
@@ -46,7 +46,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🏥 しむら小児科 予約エージェント")
+st.title("🏥 しむら小児科 事前予約アプリ")
 st.caption("【夜セット対応版】前日の夜にセットし、画面をつけたまま充電して寝てください。")
 
 # --- 設定フォーム ---

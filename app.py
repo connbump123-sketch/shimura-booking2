@@ -272,7 +272,7 @@ if st.button("🌙 おやすみ前セット（待機開始）", type="primary"):
         st.balloons()
         status_placeholder.markdown("""
             <div class="status-box" style="border-color: #4CAF50; background-color: #e8f5e9;">
-                <h3 style="color: #2e7d32 !important;">🏆 予約完了しました！</h3>
+                <h3 style="color: #2e7d32 !important;">🏆 予約完了しました！（シミュレーション完了）</h3>
                 <p>完了画面を確認してください。</p>
             </div>
         """, unsafe_allow_html=True)

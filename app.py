@@ -10,6 +10,16 @@ from selenium.webdriver.chrome.options import Options
 from PIL import Image
 import os
 
+# --- セッション状態の初期化 ---
+if 'step' not in st.session_state:
+    st.session_state.step = 'input'
+if 'target_child_val' not in st.session_state:
+    st.session_state.target_child_val = 0
+if 'target_time_val' not in st.session_state:
+    st.session_state.target_time_val = 0
+if 'show_cancel_confirm' not in st.session_state:
+    st.session_state.show_cancel_confirm = False
+
 # --- ページ設定 ---
 st.set_page_config(
     page_title="しむら小児科予約",
@@ -21,9 +31,7 @@ st.set_page_config(
 # --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* ============================
-       フォント設定（丸ゴシック化）
-    ============================ */
+    /* フォント設定（丸ゴシック） */
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
     html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, button, input, select, label {
@@ -31,67 +39,33 @@ st.markdown("""
         -webkit-font-smoothing: antialiased;
     }
 
-    /* ============================
-       レイアウト・余白設定
-    ============================ */
+    /* レイアウト設定 */
     .block-container {
         padding-top: 0.5rem !important;
         padding-bottom: 20rem !important; 
         max-width: 100% !important;
     }
-    
     div[data-testid="column"] { padding: 0 !important; }
-
-    /* キャプションの設定 */
+    
+    /* キャプション */
     div[data-testid="stCaptionContainer"] p {
         font-size: 0.9rem !important;
         color: #555555 !important;
         text-align: center;
         margin-top: -0.5rem !important;
         margin-bottom: 0.5rem !important;
-        line-height: 1.2 !important;
     }
 
-    /* ============================
-       見出し・ラベルのデザイン
-    ============================ */
+    /* 見出し設定 */
     h3 {
         font-size: 1.1rem !important;
         font-weight: bold !important;
         margin-top: 0 !important;
         margin-bottom: 0.5rem !important;
-        padding-top: 0 !important;
         color: #555555 !important;
     }
     
-    .custom-label {
-        font-size: 1.1rem;
-        font-weight: bold;
-        color: #555555;
-        margin-bottom: 0.3rem;
-        font-family: 'Kosugi Maru', sans-serif;
-    }
-
-    /* ============================
-       警告・通知ボックスの文字色強制修正 (New!)
-    ============================ */
-    /* st.warning, st.info, st.success などの文字色を濃いグレーに固定 */
-    div[data-testid="stAlert"] {
-        color: #333333 !important;
-    }
-    div[data-testid="stAlert"] p, div[data-testid="stAlert"] span, div[data-testid="stAlert"] div {
-        color: #333333 !important;
-    }
-    /* アイコンの色も調整 */
-    div[data-testid="stAlert"] svg {
-        fill: #333333 !important;
-        color: #333333 !important;
-    }
-
-    /* ============================
-       入力フォームのデザイン
-    ============================ */
-    /* ラジオボタン */
+    /* 入力フォーム設定 */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
         border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
@@ -103,34 +77,47 @@ st.markdown("""
     div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
     div[role="radiogroup"] p { font-size: 1rem !important; }
 
-    /* ドロップダウンリスト */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; border-color: #556b2f !important; color: #ffffff !important;
     }
     div[data-baseweb="select"] span { color: #ffffff !important; font-size: 1rem !important; }
     div[data-baseweb="select"] svg { fill: #ffffff !important; }
     
-    /* ============================
-       実行ボタン
-    ============================ */
+    /* ボタン共通設定 */
     div.stButton > button {
-        background-color: #f6adad !important;
-        color: white !important;
         border: none !important;
         border-radius: 8px !important;
         font-weight: bold !important;
         width: 100% !important;
         padding: 0.8em 0 !important;
-        margin-top: 1rem !important;
         font-size: 1.1rem !important;
         white-space: nowrap !important;
     }
     
+    /* 予約内容確認ボックス */
+    .info-card {
+        background-color: #f8fcf8;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 1.2rem;
+        margin: 1rem 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px dashed #eee;
+        padding-bottom: 0.3rem;
+    }
+    .info-label { font-weight: bold; color: #666; }
+    .info-val { font-weight: bold; color: #333; font-size: 1.1rem; }
+
     .stApp { background-color: #ffffff !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- ヘッダー（ロゴ表示） ---
+# --- ヘッダー ---
 logo_file = None
 if os.path.exists("logo.png"): logo_file = "logo.png"
 elif os.path.exists("logo.jpg"): logo_file = "logo.jpg"
@@ -143,7 +130,7 @@ if logo_file:
 else:
     st.error("⚠️ 画像が見つかりません。")
 
-# --- タイトル ---
+# タイトル
 st.markdown("""
     <h1 style='text-align: center; color: #555555; font-size: 1.2rem; margin-top: -10px; margin-bottom: 5px; line-height: 1.4;'>
         事前予約アプリ
@@ -151,138 +138,185 @@ st.markdown("""
     </h1>
 """, unsafe_allow_html=True)
 
-# キャプション
 st.caption("前日のうちに予約できます！")
 
-# --- 1. 予約設定 ---
-st.subheader("1. 予約設定")
+# ==========================================
+#  ロジック定義
+# ==========================================
 
-with st.container():
-    target_child_str = st.radio(
-        "予約するお子様",
-        ["オオムラ イブキ 様 (12979)", "オオムラ エリナ 様 (10865)"],
-        index=0,
-        label_visibility="collapsed"
-    )
+CHILD_OPTIONS = ["オオムラ イブキ 様 (12979)", "オオムラ エリナ 様 (10865)"]
+TIME_OPTIONS = [f"{h:02d}:{m:02d}" for h in range(9, 18) for m in [0, 15, 30, 45] 
+                if not (h == 12 and m > 0) and not (h > 12 and h < 15) and not (h == 17 and m > 30)]
 
-    st.write("")
-    st.markdown('<div class="custom-label">2. 予約希望時間</div>', unsafe_allow_html=True)
+# --- Step 1: 入力画面 ---
+if st.session_state.step == 'input':
+    st.subheader("1. 予約設定")
+    with st.container():
+        target_child_str = st.radio(
+            "予約するお子様",
+            CHILD_OPTIONS,
+            index=st.session_state.target_child_val,
+            label_visibility="collapsed"
+        )
+        st.write("")
+        st.markdown('<div class="custom-label">2. 予約希望時間</div>', unsafe_allow_html=True)
+        target_time_str = st.selectbox(
+            "予約希望時間（ラベル非表示）",
+            TIME_OPTIONS,
+            index=st.session_state.target_time_val,
+            label_visibility="collapsed"
+        )
+
+    # 次へボタン
+    st.markdown('<style>div.stButton > button {background-color: #f6adad !important; color: white !important;}</style>', unsafe_allow_html=True)
+    if st.button("🌙 おやすみ前セット（確認へ）"):
+        st.session_state.target_child_val = CHILD_OPTIONS.index(target_child_str)
+        st.session_state.target_time_val = TIME_OPTIONS.index(target_time_str)
+        st.session_state.step = 'confirm'
+        st.session_state.show_cancel_confirm = False
+        st.rerun()
+
+# --- Step 2: 確認画面（セーフティネット） ---
+elif st.session_state.step == 'confirm':
     
-    target_time_str = st.selectbox(
-        "予約希望時間（ラベル非表示）",
-        [f"{h:02d}:{m:02d}" for h in range(9, 18) for m in [0, 15, 30, 45] 
-         if not (h == 12 and m > 0) and not (h > 12 and h < 15) and not (h == 17 and m > 30)],
-        index=0,
-        label_visibility="collapsed"
-    )
-
-# 設定値抽出
-TARGET_ID = "12979" if "12979" in target_child_str else "10865"
-TARGET_NAME = "イブキ" if "イブキ" in target_child_str else "エリナ"
-TARGET_H = target_time_str.split(':')[0]
-TARGET_M = target_time_str.split(':')[1]
-TARGET_H_JP = f"{int(TARGET_H)}時"
-TARGET_M_JP = f"{TARGET_H}時{TARGET_M}分"
-START_URL = "https://shimura-kids.com/yoyaku/php/line_login.php"
-
-# --- ブラウザ設定 ---
-def get_driver():
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1')
-    return webdriver.Chrome(options=options)
-
-# --- 3. 予約実行 ---
-st.subheader("3. 予約実行")
-
-# ボタン処理
-if st.button("🌙 おやすみ前セット（待機開始）"):
-    
-    # ⚠️ 注意メッセージ（黄色い枠）
-    # CSSで文字色を濃くしたので、今度はハッキリ見えます！
+    # 警告メッセージ
     st.warning("⚠️ 画面がスリープにならないように設定してから寝てね！")
     
-    status_placeholder = st.empty()
+    # セット完了表示
+    st.success("✅ セット完了！ 待機モードの準備ができました。")
+    st.info("まだ予約は始まっていません。下のボタンで開始してください。")
+
+    # 予約内容の表示（カード型）
+    selected_child = CHILD_OPTIONS[st.session_state.target_child_val]
+    selected_time = TIME_OPTIONS[st.session_state.target_time_val]
     
-    # 時間計算
+    st.markdown(f"""
+        <div class="info-card">
+            <h3 style="margin-top:0; border-bottom:2px solid #4CAF50; padding-bottom:5px;">📋 予約内容の確認</h3>
+            <div class="info-row" style="margin-top:10px;">
+                <span class="info-label">予約者</span>
+                <span class="info-val">{selected_child.split(' ')[0]} {selected_child.split(' ')[1]}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">券番号</span>
+                <span class="info-val">{selected_child.split('(')[1].replace(')', '')}</span>
+            </div>
+            <div class="info-row" style="border-bottom:none;">
+                <span class="info-label">希望時間</span>
+                <span class="info-val" style="color:#e91e63; font-size:1.4rem;">{selected_time}</span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # --- 操作ボタンエリア ---
+    
+    # 訂正モードかどうかで表示を切り替え
+    if st.session_state.show_cancel_confirm:
+        # 本当に取り消しますか？の分岐
+        st.error("🛑 本当にセットを取り消して戻りますか？")
+        col_y, col_n = st.columns(2)
+        with col_y:
+            st.markdown('<style>div.stButton > button {background-color: #ff5252 !important; color: white !important;}</style>', unsafe_allow_html=True)
+            if st.button("はい (戻る)"):
+                st.session_state.step = 'input'
+                st.session_state.show_cancel_confirm = False
+                st.rerun()
+        with col_n:
+            st.markdown('<style>div.stButton > button {background-color: #eeeeee !important; color: #333 !important;}</style>', unsafe_allow_html=True)
+            if st.button("いいえ (戻らない)"):
+                st.session_state.show_cancel_confirm = False
+                st.rerun()
+    else:
+        # 通常のボタン配置
+        st.markdown('<style>div.stButton > button {background-color: #f6adad !important; color: white !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}</style>', unsafe_allow_html=True)
+        if st.button("🚀 待機モード開始 (ロック)"):
+            st.session_state.step = 'running'
+            st.rerun()
+
+        st.markdown('<style>div.stButton > button {background-color: #ffffff !important; color: #777 !important; border:1px solid #ccc !important;}</style>', unsafe_allow_html=True)
+        if st.button("訂正・取り消し"):
+            st.session_state.show_cancel_confirm = True
+            st.rerun()
+
+
+# --- Step 3: 実行画面（ループ突入） ---
+elif st.session_state.step == 'running':
+    
+    selected_child = CHILD_OPTIONS[st.session_state.target_child_val]
+    selected_time = TIME_OPTIONS[st.session_state.target_time_val]
+    
+    TARGET_ID = "12979" if "12979" in selected_child else "10865"
+    TARGET_NAME = "イブキ" if "イブキ" in selected_child else "エリナ"
+    TARGET_H = selected_time.split(':')[0]
+    TARGET_M = selected_time.split(':')[1]
+    TARGET_H_JP = f"{int(TARGET_H)}時"
+    TARGET_M_JP = f"{TARGET_H}時{TARGET_M}分"
+    START_URL = "https://shimura-kids.com/yoyaku/php/line_login.php"
+
+    st.warning("⚠️ 待機モード中はボタンが反応しません。中止する場合はブラウザを再読み込みしてください。")
+    
+    # 最終ステータス表示
+    status_placeholder = st.empty()
+
     jst = pytz.timezone('Asia/Tokyo')
     now = datetime.datetime.now(jst)
     target_dt = now.replace(hour=6, minute=0, second=0, microsecond=0)
     if now.hour >= 6:
         target_dt += datetime.timedelta(days=1)
     
-    # 先行ログイン開始時間（10分前）
     login_start_dt = target_dt - datetime.timedelta(minutes=10)
+
+    # Phase 1: 待機
+    status_placeholder.markdown(f"""
+        <div style="padding:1.5rem; border-radius:10px; background-color:#e8f5e9; border:2px solid #4CAF50; text-align:center;">
+            <h2 style="margin:0; color:#2e7d32;">💤 待機中...</h2>
+            <p style="font-size:1.2rem; margin:10px 0;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします</p>
+            <hr>
+            <p style="margin:0; color:#555;">予約対象: <b>{TARGET_NAME}</b> 様</p>
+            <p style="margin:0; color:#555;">希望時間: <b>{selected_time}</b></p>
+        </div>
+    """, unsafe_allow_html=True)
     
-    # --- Phase 1: 待機 ---
-    html_content = f"""
-    <div style="padding:1rem; border-radius:8px; background-color:#f1f8e9; border:1px solid #c8e6c9; margin-top:10px;">
-        <h3 style="margin:0; font-size:1.1rem; color:#4CAF50 !important;">✅ セット完了</h3>
-        <p style="margin:0.5rem 0 0 0; color:#555555; font-size:0.9rem;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします。</p>
-    </div>
-    """
-    status_placeholder.markdown(html_content, unsafe_allow_html=True)
-    
-    # 待機ループ
     while True:
         now = datetime.datetime.now(jst)
         wait_sec = (login_start_dt - now).total_seconds()
-        
-        if wait_sec <= 0:
-            break
-            
-        if wait_sec > 60:
-            time.sleep(10)
-        else:
-            time.sleep(1)
+        if wait_sec <= 0: break
+        if wait_sec > 60: time.sleep(10)
+        else: time.sleep(1)
 
-    # --- Phase 2: 先行ログイン ---
-    status_placeholder.info("🚀 先行ログインを開始します...")
+    # Phase 2: 先行ログイン
+    status_placeholder.info("🚀 先行ログインを実行中...")
     
+    def get_driver():
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1')
+        return webdriver.Chrome(options=options)
+
     driver = None
     try:
         driver = get_driver()
         wait = WebDriverWait(driver, 20)
-        
-        # サイトへアクセス
         driver.get(START_URL)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        
         try:
-            # 子供選択 & ログイン
             driver.find_element(By.XPATH, f"//label[contains(., '{TARGET_ID}')]").click()
             driver.find_element(By.XPATH, "//button[contains(., 'ログイン')]").click()
-            st.toast("先行ログイン成功！")
         except:
             pass
 
-        # 6:00まで待機
         while True:
             now = datetime.datetime.now(jst)
             remaining = (target_dt - now).total_seconds()
-            if remaining <= 10:
-                break
-            
-            # 待機中の表示
-            status_placeholder.markdown(f"""
-            <div style="padding:1rem; border-radius:8px; background-color:#e3f2fd; border:1px solid #bbdefb; margin-top:10px;">
-                <h3 style="margin:0; font-size:1.1rem; color:#1976D2 !important;">🕒 6:00 開門待ち...</h3>
-                <p style="margin:0.5rem 0 0 0; color:#555555;">あと <b>{int(remaining)}</b> 秒</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
+            if remaining <= 10: break
+            status_placeholder.markdown(f"### 🕒 6:00 開門待ち... あと {int(remaining)} 秒")
             _ = driver.current_url 
             time.sleep(1)
 
-        # --- Phase 3: ロケットダッシュ ---
-        status_placeholder.markdown("""
-        <div style="padding:1rem; border-radius:8px; background-color:#ffebee; border:1px solid #ffcdd2; margin-top:10px;">
-            <h3 style="margin:0; font-size:1.1rem; color:#d32f2f !important;">🔥 連打モード開始！</h3>
-        </div>
-        """, unsafe_allow_html=True)
+        status_placeholder.warning("🔥 予約処理を開始します！")
         
         while True:
             try:
@@ -295,28 +329,22 @@ if st.button("🌙 おやすみ前セット（待機開始）"):
                     time.sleep(0.5)
             except:
                 driver.refresh()
-            
             if (datetime.datetime.now(jst) - target_dt).total_seconds() > 60:
                 raise Exception("予約ボタンが見つかりませんでした")
 
-        # --- Phase 4: 予約ステップ ---
-        # 1. 時間帯
         time_band_xpath = f"//td[contains(., '{TARGET_H_JP}')]/following-sibling::td/a[contains(., '〇') or contains(., '△')]"
         wait.until(EC.element_to_be_clickable((By.XPATH, time_band_xpath))).click()
         
-        # 2. 詳細時間
         detail_time_xpath = f"//td[contains(., '{TARGET_M_JP}')]/following-sibling::td/a[contains(., '〇') or contains(., '△')]"
         wait.until(EC.element_to_be_clickable((By.XPATH, detail_time_xpath))).click()
         
-        # 3. 確認画面
         next_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(., '確認') or contains(., '次へ') or @type='submit']")))
         driver.execute_script("arguments[0].scrollIntoView();", next_btn)
         next_btn.click()
         
-        # 4. 最終確定 (★ここだけコメントアウトしてあります★)
         final_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(., '予 約')]")))
         
-        # 👇👇👇 本番では、下の行の「#」を消してください 👇👇👇
+        # 👇 本番稼働時はコメントアウトを外す
         # final_btn.click()
         
         st.balloons()

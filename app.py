@@ -7,11 +7,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from PIL import Image
 import os
 
 # --- ページ設定 ---
 st.set_page_config(
     page_title="しむら小児科予約",
+    page_icon="🏥",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
@@ -30,7 +32,7 @@ st.markdown("""
     }
 
     /* ============================
-       レイアウト設定
+       レイアウト・余白設定
     ============================ */
     .block-container {
         padding-top: 0.5rem !important;
@@ -50,7 +52,9 @@ st.markdown("""
         line-height: 1.2 !important;
     }
 
-    /* 見出し設定 */
+    /* ============================
+       見出し・ラベルのデザイン
+    ============================ */
     h3 {
         font-size: 1.1rem !important;
         font-weight: bold !important;
@@ -68,7 +72,26 @@ st.markdown("""
         font-family: 'Kosugi Maru', sans-serif;
     }
 
-    /* 入力フォーム設定 */
+    /* ============================
+       警告・通知ボックスの文字色強制修正 (New!)
+    ============================ */
+    /* st.warning, st.info, st.success などの文字色を濃いグレーに固定 */
+    div[data-testid="stAlert"] {
+        color: #333333 !important;
+    }
+    div[data-testid="stAlert"] p, div[data-testid="stAlert"] span, div[data-testid="stAlert"] div {
+        color: #333333 !important;
+    }
+    /* アイコンの色も調整 */
+    div[data-testid="stAlert"] svg {
+        fill: #333333 !important;
+        color: #333333 !important;
+    }
+
+    /* ============================
+       入力フォームのデザイン
+    ============================ */
+    /* ラジオボタン */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
         border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
@@ -80,13 +103,16 @@ st.markdown("""
     div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
     div[role="radiogroup"] p { font-size: 1rem !important; }
 
+    /* ドロップダウンリスト */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; border-color: #556b2f !important; color: #ffffff !important;
     }
     div[data-baseweb="select"] span { color: #ffffff !important; font-size: 1rem !important; }
     div[data-baseweb="select"] svg { fill: #ffffff !important; }
     
-    /* 実行ボタン設定 */
+    /* ============================
+       実行ボタン
+    ============================ */
     div.stButton > button {
         background-color: #f6adad !important;
         color: white !important;
@@ -172,10 +198,11 @@ def get_driver():
 # --- 3. 予約実行 ---
 st.subheader("3. 予約実行")
 
-# ボタンを押すと、ここから下の処理が動きます
+# ボタン処理
 if st.button("🌙 おやすみ前セット（待機開始）"):
     
-    # ⚠️ 注意メッセージを表示（黄色い枠）
+    # ⚠️ 注意メッセージ（黄色い枠）
+    # CSSで文字色を濃くしたので、今度はハッキリ見えます！
     st.warning("⚠️ 画面がスリープにならないように設定してから寝てね！")
     
     status_placeholder = st.empty()
@@ -191,11 +218,10 @@ if st.button("🌙 おやすみ前セット（待機開始）"):
     login_start_dt = target_dt - datetime.timedelta(minutes=10)
     
     # --- Phase 1: 待機 ---
-    # エラー回避のため、HTMLは変数に入れてから表示します
     html_content = f"""
-    <div style="padding:1rem; border-radius:8px; background-color:#f1f8e9; border:1px solid #c8e6c9;">
-        <h3 style="margin:0; font-size:1rem; color:#4CAF50 !important;">✅ セット完了</h3>
-        <p style="margin:0; color:#555;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします。</p>
+    <div style="padding:1rem; border-radius:8px; background-color:#f1f8e9; border:1px solid #c8e6c9; margin-top:10px;">
+        <h3 style="margin:0; font-size:1.1rem; color:#4CAF50 !important;">✅ セット完了</h3>
+        <p style="margin:0.5rem 0 0 0; color:#555555; font-size:0.9rem;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします。</p>
     </div>
     """
     status_placeholder.markdown(html_content, unsafe_allow_html=True)
@@ -240,12 +266,23 @@ if st.button("🌙 おやすみ前セット（待機開始）"):
             if remaining <= 10:
                 break
             
-            status_placeholder.markdown(f"### 🕒 6:00 開門待ち... あと {int(remaining)} 秒")
+            # 待機中の表示
+            status_placeholder.markdown(f"""
+            <div style="padding:1rem; border-radius:8px; background-color:#e3f2fd; border:1px solid #bbdefb; margin-top:10px;">
+                <h3 style="margin:0; font-size:1.1rem; color:#1976D2 !important;">🕒 6:00 開門待ち...</h3>
+                <p style="margin:0.5rem 0 0 0; color:#555555;">あと <b>{int(remaining)}</b> 秒</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
             _ = driver.current_url 
             time.sleep(1)
 
         # --- Phase 3: ロケットダッシュ ---
-        status_placeholder.warning("🔥 連打モード開始！")
+        status_placeholder.markdown("""
+        <div style="padding:1rem; border-radius:8px; background-color:#ffebee; border:1px solid #ffcdd2; margin-top:10px;">
+            <h3 style="margin:0; font-size:1.1rem; color:#d32f2f !important;">🔥 連打モード開始！</h3>
+        </div>
+        """, unsafe_allow_html=True)
         
         while True:
             try:

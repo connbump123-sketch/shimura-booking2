@@ -44,63 +44,66 @@ def scroll_to_top():
     '''
     components.html(js, height=0)
 
-# --- デザイン調整 (CSS: 完全版) ---
+# --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* ============================
-       1. 基本設定（ダークモード強制解除・フォント）
-    ============================ */
+    /* フォント設定（丸ゴシック） */
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
-    /* 全体の背景を白、文字を濃いグレーに強制固定 */
-    [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
-        background-color: #ffffff !important;
-    }
+    /* 基本テキスト色：濃いグレー(#555) */
     html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, label {
         font-family: 'Kosugi Maru', sans-serif !important;
         color: #555555 !important;
         -webkit-font-smoothing: antialiased;
     }
+    
+    /* 背景色を白に固定（ダークモード対策） */
+    [data-testid="stAppViewContainer"] {
+        background-color: #ffffff !important;
+    }
+    .stApp {
+        background-color: #ffffff !important;
+    }
 
-    /* ============================
-       2. レイアウト調整（スマホ横並び対応）
-    ============================ */
+    /* レイアウト調整：上部余白を確保してロゴ見切れを防止 */
     .block-container {
-        padding-top: 0.5rem !important;
+        padding-top: 2rem !important; /* ここを増やしました */
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
-    
-    /* ★ここが重要：スマホでもカラムを縦積みにせず、強制的に横並びにする */
-    div[data-testid="stHorizontalBlock"] {
-        flex-wrap: nowrap !important;
-    }
-    div[data-testid="column"] {
-        min-width: 0 !important; /* 幅が狭くなっても許容する */
-    }
 
-    /* タイトル・キャプション */
+    /* タイトル調整 */
     h1 {
         font-size: 1.1rem !important;
-        margin-top: 0 !important;
+        margin-top: 0.5rem !important;
         margin-bottom: 0 !important;
+        color: #555555 !important;
     }
     div[data-testid="stCaptionContainer"] p {
         font-size: 0.85rem !important;
-        color: #888888 !important;
+        margin-top: 0 !important;
+        color: #666666 !important;
     }
 
     /* ============================
-       3. コンポーネントの配色復元
+       【重要】スマホでのボタン横並び強制設定
     ============================ */
+    /* カラムを画面幅の50%ずつに強制分割 */
+    div[data-testid="column"] {
+        width: 50% !important;
+        flex: 1 1 auto !important;
+        min-width: 50% !important;
+        padding: 0 5px !important; /* ボタン同士の間隔調整 */
+    }
     
-    /* --- ラジオボタン --- */
-    /* 未選択：薄いグレー */
+    /* ============================
+       入力フォームのデザイン
+    ============================ */
+    /* ラジオボタン (選択時グリーン) */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
         border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
     }
-    /* 選択中：鮮やかなグリーン */
     div[role="radiogroup"] label:has(input:checked) p { 
         color: #4CAF50 !important; 
         font-weight: bold !important; 
@@ -114,46 +117,48 @@ st.markdown("""
     }
     div[role="radiogroup"] p { font-size: 1rem !important; }
 
-    /* --- ドロップダウンリスト（モスグリーン背景・白文字） --- */
-    /* 閉じてる時のボックス */
+    /* ドロップダウンリスト（モスグリーン背景・白文字） */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; 
         border-color: #556b2f !important; 
         color: #ffffff !important;
     }
-    /* 中の文字を白に強制 */
+    /* 選択中の文字を白に強制 */
     div[data-baseweb="select"] span { 
         color: #ffffff !important; 
     }
     /* 矢印アイコンを白に強制 */
     div[data-baseweb="select"] svg { 
-        fill: #ffffff !important; stroke: #ffffff !important;
+        fill: #ffffff !important; 
     }
     
-    /* リストが開いた時（ポップオーバー） */
+    /* リストが開いた時 */
     div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
         background-color: #556b2f !important;
     }
     div[data-baseweb="popover"] li {
         color: #ffffff !important;
     }
-    div[data-baseweb="popover"] li:hover, div[data-baseweb="popover"] li[aria-selected="true"] {
-        background-color: #3b4a1c !important; /* 選択時は濃い緑 */
+    div[data-baseweb="popover"] li:hover {
+        background-color: #3b4a1c !important;
     }
 
-    /* --- ボタンの基本デザイン --- */
+    /* ============================
+       ボタンの基本デザイン
+    ============================ */
     div.stButton > button {
         border: none !important;
         border-radius: 8px !important;
         font-weight: bold !important;
         width: 100% !important;
         padding: 0.8em 0 !important;
-        font-size: 1.0rem !important;
-        white-space: nowrap !important; /* 改行させない */
+        font-size: 1.0rem !important; /* スマホで並んだ時に文字が溢れないよう調整 */
+        white-space: nowrap !important;
     }
 
-    /* --- 各種情報ボックス --- */
-    /* 青：案内 */
+    /* ============================
+       情報ボックスのデザイン
+    ============================ */
     .info-box-blue {
         background-color: #e3f2fd;
         border: 1px solid #90caf9;
@@ -164,18 +169,17 @@ st.markdown("""
         margin-bottom: 1rem;
         font-weight: bold;
     }
-    /* 黄：警告（文字はオレンジ） */
+    /* 警告ボックス (文字色オレンジ) */
     .info-box-yellow {
         background-color: #fff9c4;
         border: 1px solid #fff59d;
-        color: #f57f17 !important; /* オレンジ色 */
+        color: #f57f17 !important; 
         padding: 1rem;
         border-radius: 8px;
         text-align: center;
         margin-bottom: 1rem;
         font-weight: bold;
     }
-    /* 緑：ステータス（文字は濃い緑） */
     .status-box-green {
         background-color: #e8f5e9;
         border: 2px solid #4CAF50;
@@ -207,7 +211,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- ヘッダー（ロゴ） ---
+# --- ヘッダー（ロゴ）: 必ず最初に描画 ---
 logo_file = None
 if os.path.exists("logo.png"): logo_file = "logo.png"
 elif os.path.exists("logo.jpg"): logo_file = "logo.jpg"
@@ -220,9 +224,9 @@ with col2:
     else:
         st.error("ロゴ画像なし")
 
-# --- タイトル (HTML調整済み) ---
+# --- タイトル ---
 st.markdown("""
-    <h1 style='text-align: center; margin-top: -5px; line-height: 1.3; color: #555555 !important; font-size: 1.1rem;'>
+    <h1 style='text-align: center; margin-top: -5px; line-height: 1.3;'>
         事前予約アプリ
         <div style='font-size: 0.85rem; margin-top: 3px; color: #666666 !important;'>〜大村家 専用〜</div>
     </h1>
@@ -302,8 +306,8 @@ elif st.session_state.step == 'confirm':
         </div>
     """, unsafe_allow_html=True)
 
-    # ★スマホ横並び対応: 比率を微調整
-    col1, col2 = st.columns([1, 1.3])
+    # ボタンエリア（CSSで個別色指定 & 横並び）
+    col1, col2 = st.columns(2)
     
     with col1:
         # 訂正ボタン（白背景・濃いグレー文字）
@@ -333,7 +337,7 @@ elif st.session_state.step == 'confirm':
             }
             </style>
         """, unsafe_allow_html=True)
-        if st.button("🚀 待機モード開始"):
+        if st.button("🚀 待機開始"):
             st.session_state.step = 'running'
             st.rerun()
 
@@ -378,7 +382,7 @@ elif st.session_state.step == 'running':
     """, unsafe_allow_html=True)
 
     st.write("")
-    # 訂正ボタン（白背景・グレー文字）
+    # 訂正ボタン（白背景）
     st.markdown("""
         <style>
         div.stButton > button {

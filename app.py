@@ -44,32 +44,37 @@ def scroll_to_top():
     '''
     components.html(js, height=0)
 
-# --- 基本デザイン調整 (CSS) ---
+# --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* フォント設定 */
+    /* ============================
+       1. フォント設定 (最優先)
+    ============================ */
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
-    /* ============================
-       1. ダークモード根絶 & 基本設定
-    ============================ */
-    :root {
-        color-scheme: light only !important;
+    /* 全ての要素に丸ゴシックを強制適用 */
+    * {
+        font-family: 'Kosugi Maru', "Hiragino Maru Gothic ProN", "M PLUS Rounded 1c", sans-serif !important;
     }
+
+    /* ============================
+       2. ダークモード完全無効化
+    ============================ */
+    :root { color-scheme: light only !important; }
     html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
         background-color: #ffffff !important;
-        font-family: 'Kosugi Maru', sans-serif !important;
         color: #555555 !important;
     }
-    
-    /* レイアウト調整 */
+
+    /* ============================
+       3. レイアウト調整 (ロゴ・余白)
+    ============================ */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
-
-    /* タイトル調整 */
+    
     h1 {
         font-size: 1.1rem !important;
         margin-top: 0.5rem !important;
@@ -92,108 +97,88 @@ st.markdown("""
     }
 
     /* ============================
-       2. 入力フォームのデザイン
+       4. 【重要】ボタン横並び絶対強制
     ============================ */
-    /* ラジオボタン */
-    div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
-    div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
-        border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
-    }
-    /* 選択時グリーン */
-    div[role="radiogroup"] label:has(input:checked) p { 
-        color: #4CAF50 !important; 
-        font-weight: bold !important; 
-    }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child {
-        border-color: #4CAF50 !important; 
-        background-color: #4CAF50 !important;
-    }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { 
-        fill: #ffffff !important; 
-    }
-
-    /* ドロップダウンリスト（物理的強制） */
-    div[data-baseweb="select"] > div {
-        background-color: #556b2f !important; 
-        border-color: #556b2f !important; 
-        color: #ffffff !important;
-    }
-    /* 中身の全要素を白に強制 */
-    div[data-baseweb="select"] * { 
-        color: #ffffff !important; 
-        fill: #ffffff !important; 
+    /* カラムの親要素（水平ブロック）に対し、折り返しを禁止する */
+    [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important; /* これで縦積み回避 */
+        gap: 10px !important;
+        width: 100% !important;
     }
     
-    /* ポップアップメニュー */
-    div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
-        background-color: #556b2f !important;
-    }
-    div[data-baseweb="popover"] * {
-        color: #ffffff !important;
-    }
-    div[data-baseweb="popover"] li:hover {
-        background-color: #3b4a1c !important;
+    /* 各カラム（ボタンの箱）の設定 */
+    [data-testid="column"] {
+        flex: 1 1 50% !important; /* 均等に分割 */
+        width: auto !important;
+        min-width: 0 !important; /* 縮小を許可 */
     }
 
     /* ============================
-       3. 情報ボックスのデザイン
+       5. フォーム部品のデザイン
     ============================ */
-    .info-box-blue {
-        background-color: #e3f2fd;
-        border: 1px solid #90caf9;
-        color: #0d47a1 !important;
-        padding: 1rem;
-        border-radius: 8px;
-        text-align: center;
-        margin-bottom: 1rem;
-        font-weight: bold;
+    /* ラジオボタン */
+    div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
+    div[role="radiogroup"] label:has(input:checked) p { color: #4CAF50 !important; font-weight: bold !important; }
+    div[role="radiogroup"] label:has(input:checked) > div:first-child {
+        border-color: #4CAF50 !important; background-color: #4CAF50 !important;
     }
-    /* 警告ボックス (文字色オレンジ) */
-    .info-box-yellow {
-        background-color: #fff9c4;
-        border: 1px solid #fff59d;
-        color: #f57f17 !important; 
-        padding: 1rem;
-        border-radius: 8px;
-        text-align: center;
-        margin-bottom: 1rem;
-        font-weight: bold;
+    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
+
+    /* ドロップダウンリスト（文字白強制） */
+    div[data-baseweb="select"] > div {
+        background-color: #556b2f !important; border-color: #556b2f !important;
     }
-    .status-box-green {
-        background-color: #e8f5e9;
-        border: 2px solid #4CAF50;
-        color: #1b5e20 !important;
-        padding: 1.5rem;
-        border-radius: 10px;
-        text-align: center;
-        margin-bottom: 1rem;
+    div[data-baseweb="select"] * { 
+        color: #ffffff !important; fill: #ffffff !important; 
     }
     
+    /* リストポップアップ */
+    div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
+        background-color: #556b2f !important;
+    }
+    div[data-baseweb="popover"] * { color: #ffffff !important; }
+    div[data-baseweb="popover"] li:hover { background-color: #3b4a1c !important; }
+
+    /* ============================
+       6. ボタン基本スタイル
+    ============================ */
+    div.stButton > button {
+        width: 100% !important;
+        border-radius: 8px !important;
+        font-weight: bold !important;
+        padding: 0.8em 0 !important;
+        font-size: 0.95rem !important;
+        white-space: nowrap !important;
+        border: none !important;
+    }
+
+    /* ============================
+       7. ステータスボックス
+    ============================ */
+    .info-box-blue {
+        background-color: #e3f2fd; border: 1px solid #90caf9; color: #0d47a1 !important;
+        padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; font-weight: bold;
+    }
+    .info-box-yellow {
+        background-color: #fff9c4; border: 1px solid #fff59d; color: #f57f17 !important;
+        padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; font-weight: bold;
+    }
+    .status-box-green {
+        background-color: #e8f5e9; border: 2px solid #4CAF50; color: #1b5e20 !important;
+        padding: 1.5rem; border-radius: 10px; text-align: center; margin-bottom: 1rem;
+    }
     .confirm-card {
-        background-color: #f9f9f9;
-        border: 1px solid #eee;
-        border-radius: 10px;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
+        background-color: #f9f9f9; border: 1px solid #eee; border-radius: 10px;
+        padding: 1rem; margin-bottom: 1.5rem;
     }
     .card-row {
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px dashed #ddd;
-        padding: 0.5rem 0;
+        display: flex; justify-content: space-between; border-bottom: 1px dashed #ddd; padding: 0.5rem 0;
     }
     .card-row:last-child { border-bottom: none; }
     .card-label { color: #666 !important; font-weight: bold; }
     .card-value { color: #333 !important; font-weight: bold; font-size: 1.1rem; }
-    
-    /* ボタン基本リセット */
-    div.stButton > button {
-        width: 100%;
-        border-radius: 8px !important;
-        font-weight: bold !important;
-        padding: 0.8em 0 !important;
-        white-space: nowrap !important;
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -226,13 +211,12 @@ TIME_OPTIONS = [f"{h:02d}:{m:02d}" for h in range(9, 18) for m in [0, 15, 30, 45
 
 # --- Step 1: 入力画面 ---
 if st.session_state.step == 'input':
-    # ★Step1専用：ピンクボタンCSSを注入★
+    # ピンクボタン（白文字）
     st.markdown("""
         <style>
         div.stButton > button {
             background-color: #f6adad !important;
             color: #ffffff !important;
-            border: none !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
         }
         div.stButton > button p { color: #ffffff !important; }
@@ -269,17 +253,10 @@ if st.session_state.step == 'input':
 elif st.session_state.step == 'confirm':
     scroll_to_top()
     
-    # ★Step2専用：ボタン配置CSSを注入（横並び＆色分け）★
+    # ボタン専用CSS：左（白）、右（ピンク）
     st.markdown("""
         <style>
-        /* 左右分割 */
-        div[data-testid="column"] {
-            width: 50% !important;
-            flex: 1 1 auto !important;
-            min-width: 50% !important;
-            padding: 0 5px !important;
-        }
-        /* 左ボタン：白 */
+        /* 左のカラム（訂正） */
         div[data-testid="column"]:nth-of-type(1) div.stButton > button {
             background-color: #ffffff !important;
             color: #555555 !important;
@@ -287,11 +264,10 @@ elif st.session_state.step == 'confirm':
         }
         div[data-testid="column"]:nth-of-type(1) div.stButton > button p { color: #555555 !important; }
         
-        /* 右ボタン：ピンク */
+        /* 右のカラム（開始） */
         div[data-testid="column"]:nth-of-type(2) div.stButton > button {
             background-color: #f6adad !important;
             color: #ffffff !important;
-            border: none !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
         }
         div[data-testid="column"]:nth-of-type(2) div.stButton > button p { color: #ffffff !important; }
@@ -335,7 +311,7 @@ elif st.session_state.step == 'confirm':
 elif st.session_state.step == 'running':
     scroll_to_top()
     
-    # ★Step3専用：訂正ボタン(白)CSSを注入★
+    # 訂正ボタン（白）
     st.markdown("""
         <style>
         div.stButton > button {

@@ -90,7 +90,7 @@ st.markdown("""
 
     /* ドロップダウンリスト */
     div[data-baseweb="select"] > div {
-        background-color: #556b2f !important; border-color: #556b2f !important; color: #ffffff !important;
+        background-color: #556b2f !important; border-color: #ffffff !important; color: #ffffff !important;
     }
     div[data-baseweb="select"] span { color: #ffffff !important; font-size: 1rem !important; }
     div[data-baseweb="select"] svg { fill: #ffffff !important; }

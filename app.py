@@ -19,97 +19,120 @@ st.set_page_config(
 # --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
+    /* ============================
+       フォント設定（丸ゴシック化）
+    ============================ */
+    /* アプリ全体のフォントを丸ゴシック系に統一 */
+    html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, button, input, select, label {
+        font-family: "Hiragino Maru Gothic ProN", "HGMaruGothicMPRO", "Yu Gothic Medium", "Yu Gothic", sans-serif !important;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================
+       レイアウト・ロゴ設定
+    ============================ */
     /* 1. 全体レイアウト調整 */
-    /* 上部の余白を3remに広げてヘッダー被りを解消 */
-    /* 下部の余白を20rem確保し、リストが下側に開くスペースを作る */
     .block-container {
-        padding-top: 3rem !important;
+        padding-top: 1.5rem !important; /* ロゴのために上部余白を調整 */
         padding-bottom: 20rem !important; 
         max-width: 100% !important;
     }
     
-    /* 2. タイトルの極小化 */
+    /* 2. 元のテキストタイトルを非表示に */
     h1 {
-        font-size: 0.9rem !important;
-        font-weight: bold !important;
-        margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-        color: #555555 !important; /* 濃いめのグレー */
-        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important;
+        display: none !important;
     }
     
-    /* 3. キャプション（前日の夜に～） */
+    /* 3. ロゴ画像のスタイル */
+    .logo-img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;       /* スマホで見やすいサイズに調整 */
+        max-width: 300px; /* PCで大きすぎないように制限 */
+        height: auto;
+        margin-bottom: 0.5rem; /* 下のキャプションとの間隔 */
+    }
+
+    /* ============================
+       その他のデザイン要素
+    ============================ */
+    /* 4. キャプション（前日の夜に～） */
     div[data-testid="stCaptionContainer"] p {
-        font-size: 0.75rem !important;
-        color: #555555 !important; /* 濃いめのグレー */
-        margin-top: 0.2rem !important;
-        margin-bottom: 0.5rem !important;
+        font-size: 0.8rem !important;
+        color: #555555 !important;
+        text-align: center; /* 中央揃え */
+        margin-top: 0 !important;
+        margin-bottom: 1.5rem !important;
     }
     
-    /* 4. 見出し（1. 予約設定 など） */
+    /* 5. 見出し（1. 予約設定 など） */
     h3 {
-        font-size: 1.0rem !important;
+        font-size: 1.1rem !important;
         font-weight: bold !important;
-        margin-top: 0.5rem !important;
-        margin-bottom: 0.3rem !important;
-        padding: 0 !important;
-        color: #555555 !important;
-        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important;
+        margin-top: 1rem !important;
+        margin-bottom: 0.5rem !important;
+        color: #4CAF50 !important;
     }
     
     /* カスタムラベル（2. 予約希望時間用） */
     .custom-label {
-        font-size: 1.0rem;
+        font-size: 1.1rem;
         font-weight: bold;
         color: #555555;
         margin-bottom: 0.3rem;
-        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
     }
 
-    /* 5. ラジオボタン */
-    /* 未選択（薄いグレー） */
+    /* 6. ラジオボタン */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
         border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
     }
-    /* 選択済み（緑背景・中白） */
     div[role="radiogroup"] label:has(input:checked) p { color: #4CAF50 !important; font-weight: bold !important; }
     div[role="radiogroup"] label:has(input:checked) > div:first-child {
         border-color: #4CAF50 !important; background-color: #4CAF50 !important;
     }
     div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
+    /* ラジオボタンの選択肢の文字サイズを少し大きく */
+    div[role="radiogroup"] p {
+        font-size: 1rem !important;
+    }
 
-    /* 6. ドロップダウンリスト（モスグリーン固定） */
-    /* 閉じてる時 */
+    /* 7. ドロップダウンリスト */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; border-color: #556b2f !important; color: #ffffff !important;
     }
-    div[data-baseweb="select"] span, div[data-baseweb="select"] svg { color: #ffffff !important; fill: #ffffff !important; }
+    div[data-baseweb="select"] span { color: #ffffff !important; font-size: 1rem !important; }
+    div[data-baseweb="select"] svg { fill: #ffffff !important; }
     
-    /* 開いた時（ポップオーバー） */
     div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
         background-color: #556b2f !important;
     }
-    div[data-baseweb="popover"] li, div[data-baseweb="popover"] div { color: #ffffff !important; }
+    div[data-baseweb="popover"] li, div[data-baseweb="popover"] div {
+        color: #ffffff !important; font-size: 1rem !important;
+    }
     div[data-baseweb="popover"] li:hover, div[data-baseweb="popover"] li[aria-selected="true"] {
         background-color: #3b4a1c !important;
     }
 
-    /* 7. 実行ボタン */
+    /* 8. 実行ボタン */
     div.stButton > button {
         background-color: #f6adad !important; color: white !important; border: none !important;
         border-radius: 8px !important; font-weight: bold !important; width: 100% !important;
-        padding: 0.8em 1em !important; margin-top: 0.5rem !important;
+        padding: 0.8em 1em !important; margin-top: 1rem !important; font-size: 1.1rem !important;
     }
     
-    /* 8. 背景設定 */
+    /* 9. 背景設定 */
     .stApp { background-color: #ffffff !important; }
-    p, span { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# タイトル
-st.title("🏥 しむら小児科 事前予約")
+# --- ヘッダー（ロゴ表示） ---
+# st.title()の代わりにHTMLで画像を表示
+st.markdown('<img src="https://raw.githubusercontent.com/connbump123-sketch/shimura-booking2/main/logo.png" class="logo-img">', unsafe_allow_html=True)
+# ※注意: 上記URLの "connbump123-sketch/shimura-booking2" の部分は、
+# あなたの実際のGitHubの「ユーザー名/リポジトリ名」に合わせて修正してください！
+
 st.caption("前日の夜にセットし、画面をつけたまま充電して寝てください。")
 
 # --- 1. 予約設定 ---
@@ -125,7 +148,7 @@ with st.container():
     )
 
     # 時間選択
-    st.write("") # 少し隙間
+    st.write("")
     st.markdown('<div class="custom-label">2. 予約希望時間</div>', unsafe_allow_html=True)
     
     target_time_str = st.selectbox(

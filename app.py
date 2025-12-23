@@ -12,8 +12,8 @@ import os
 
 # --- ページ設定 ---
 st.set_page_config(
-    page_title="しむら小児科予約",
-    page_icon="🏥",
+    page_title="しむら小児科予約アプリ",
+    page_icon="",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
@@ -114,16 +114,24 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- ヘッダー（ロゴ表示：修正版） ---
-# 画像ファイルが存在するかチェックして表示
-if os.path.exists("logo.jpg"):
-    col1, col2, col3 = st.columns([1, 4, 1]) # 中央寄せのためのカラム
+# --- ヘッダー（ロゴ表示：JPG/PNG両対応版） ---
+logo_file = None
+# 画像を探す（png, jpg, jpegのどれかがあればOK）
+if os.path.exists("logo.png"):
+    logo_file = "logo.png"
+elif os.path.exists("logo.jpg"):
+    logo_file = "logo.jpg"
+elif os.path.exists("logo.jpeg"):
+    logo_file = "logo.jpeg"
+
+if logo_file:
+    col1, col2, col3 = st.columns([1, 4, 1])
     with col2:
-        st.image("logo.jpg", use_container_width=True)
+        st.image(logo_file, use_container_width=True)
 else:
-    # 万が一画像がない場合はテキストを表示
+    # 画像がない場合のエラー表示
     st.markdown("<h2 style='text-align: center; color: #4CAF50;'>🏥 しむら小児科</h2>", unsafe_allow_html=True)
-    st.error("⚠️ 'logo.png' が見つかりません。GitHubにアップロードしてください。")
+    st.error("⚠️ 画像が見つかりません。'logo.jpg' または 'logo.png' という名前でアップロードしてください。")
 
 st.caption("前日の夜にセットし、画面をつけたまま充電して寝てください。")
 

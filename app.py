@@ -32,47 +32,63 @@ st.markdown("""
     }
 
     /* ============================
-       レイアウト・余白設定 (極限まで詰める)
+       レイアウト設定
     ============================ */
+    /* ヘッダー被り対策 & 下部スペース確保 */
     .block-container {
-        padding-top: 0.5rem !important; /* 上部の余白を最小に */
+        padding-top: 4.5rem !important; /* ロゴが隠れないよう大幅に増やす */
         padding-bottom: 20rem !important; 
         max-width: 100% !important;
     }
-    
-    /* カラム間の余白を詰める */
-    div[data-testid="column"] {
+
+    /* ============================
+       タイトル・キャプション周りの空白削除
+    ============================ */
+    /* タイトル */
+    h1 {
+        display: block !important;
+        font-size: 1.1rem !important;
+        text-align: center !important;
+        color: #555555 !important;
+        margin-top: 0.2rem !important; /* 上を少し詰める */
+        margin-bottom: 0 !important;
         padding: 0 !important;
     }
 
-    /* キャプション（前日の夜に...）の設定 */
+    /* キャプションのテキスト自体 */
     div[data-testid="stCaptionContainer"] p {
-        font-size: 0.75rem !important;
+        font-size: 0.8rem !important;
         color: #555555 !important;
         text-align: center;
-        margin-top: -0.5rem !important; /* タイトルとの距離を詰める */
-        margin-bottom: 0.5rem !important; /* 下との距離を詰める */
-        line-height: 1.2 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0.2rem !important; /* 下の余白を極限まで減らす */
+        line-height: 1.4 !important;
+    }
+    
+    /* キャプションのコンテナを上に引き上げる */
+    div[data-testid="stCaptionContainer"] {
+        padding-top: 0 !important;
+        margin-top: -0.8rem !important; /* 強力に上に詰める */
+        margin-bottom: 0 !important;
     }
 
     /* ============================
-       見出し・ラベルのデザイン (#555555統一)
+       見出し・ラベルのデザイン & 空白削除
     ============================ */
     h3 {
         font-size: 1.1rem !important;
         font-weight: bold !important;
-        margin-top: 0 !important; /* 上の余白を削除 */
-        margin-bottom: 0.5rem !important;
-        padding-top: 0 !important;
+        margin-top: 0.8rem !important; /* 上は少し空ける */
+        margin-bottom: 0.2rem !important; /* 下の余白を狭くする */
         color: #555555 !important;
     }
     
-    /* カスタムラベル（2. 予約希望時間用） */
+    /* カスタムラベル */
     .custom-label {
         font-size: 1.1rem;
         font-weight: bold;
         color: #555555;
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.1rem; /* 下の余白を狭くする */
         font-family: 'Kosugi Maru', sans-serif;
     }
 
@@ -89,7 +105,7 @@ st.markdown("""
         border-color: #4CAF50 !important; background-color: #4CAF50 !important;
     }
     div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
-    div[role="radiogroup"] p { font-size: 1rem !important; }
+    div[role="radiogroup"] p { font-size: 1rem !important; margin-bottom: 0 !important; } /* 余白削除 */
 
     /* ドロップダウンリスト */
     div[data-baseweb="select"] > div {
@@ -99,7 +115,7 @@ st.markdown("""
     div[data-baseweb="select"] svg { fill: #ffffff !important; }
     
     /* ============================
-       実行ボタン（改行防止）
+       実行ボタン（空白削除・改行防止）
     ============================ */
     div.stButton > button {
         background-color: #f6adad !important;
@@ -109,7 +125,7 @@ st.markdown("""
         font-weight: bold !important;
         width: 100% !important;
         padding: 0.8em 0 !important;
-        margin-top: 1rem !important;
+        margin-top: 0.2rem !important; /* 上の余白を狭くする */
         font-size: 1.1rem !important;
         white-space: nowrap !important;
     }
@@ -126,20 +142,14 @@ elif os.path.exists("logo.jpg"): logo_file = "logo.jpg"
 elif os.path.exists("logo.jpeg"): logo_file = "logo.jpeg"
 
 if logo_file:
-    # 画像の表示（カラムを使って中央寄せしつつサイズ調整）
     col1, col2, col3 = st.columns([1, 4, 1])
     with col2:
         st.image(logo_file, use_container_width=True)
 else:
     st.error("⚠️ 画像が見つかりません。")
 
-# --- タイトル（改行対応・HTMLで直接記述） ---
-st.markdown("""
-    <h1 style='text-align: center; color: #555555; font-size: 1.2rem; margin-top: -10px; margin-bottom: 5px; line-height: 1.4;'>
-        事前予約アプリ<br>
-        <span style='font-size: 0.9rem;'>〜大村家 専用〜</span>
-    </h1>
-""", unsafe_allow_html=True)
+# タイトル
+st.title("事前予約アプリ　〜大村家 専用〜")
 
 # キャプション
 st.caption("前日の夜にセットし、画面をつけたまま充電して寝てください。")
@@ -157,7 +167,7 @@ with st.container():
     )
 
     # 時間選択
-    st.write("")
+    st.write("") # 最小限の隙間
     st.markdown('<div class="custom-label">2. 予約希望時間</div>', unsafe_allow_html=True)
     
     target_time_str = st.selectbox(

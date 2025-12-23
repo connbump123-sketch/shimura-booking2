@@ -61,7 +61,7 @@ st.markdown("""
         font-weight: bold !important;
         margin-top: 1rem !important;
         margin-bottom: 0.5rem !important;
-        color: #4CAF50 !important;
+        color: #555555 !important;
     }
     
     /* カスタムラベル（2. 予約希望時間用） */
@@ -116,10 +116,10 @@ st.markdown("""
 
 # --- ヘッダー（ロゴ表示：修正版） ---
 # 画像ファイルが存在するかチェックして表示
-if os.path.exists("logo.png"):
+if os.path.exists("logo.jpg"):
     col1, col2, col3 = st.columns([1, 4, 1]) # 中央寄せのためのカラム
     with col2:
-        st.image("logo.png", use_container_width=True)
+        st.image("logo.jpg", use_container_width=True)
 else:
     # 万が一画像がない場合はテキストを表示
     st.markdown("<h2 style='text-align: center; color: #4CAF50;'>🏥 しむら小児科</h2>", unsafe_allow_html=True)

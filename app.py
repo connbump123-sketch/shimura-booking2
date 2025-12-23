@@ -32,42 +32,27 @@ st.markdown("""
     }
 
     /* ============================
-       レイアウト設定
+       レイアウト・余白設定 (極限まで詰める)
     ============================ */
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 0.5rem !important; /* 上部の余白を最小に */
         padding-bottom: 20rem !important; 
         max-width: 100% !important;
     }
-
-    /* ============================
-       タイトル・キャプション周りの余白削減
-    ============================ */
-    /* タイトル（事前予約アプリ...）の設定 */
-    h1 {
-        display: block !important; /* 表示させる */
-        font-size: 1.1rem !important;
-        text-align: center !important;
-        color: #555555 !important; /* 指定色 */
-        margin-top: 0.5rem !important;
-        margin-bottom: 0 !important; /* 下の余白を消す */
+    
+    /* カラム間の余白を詰める */
+    div[data-testid="column"] {
         padding: 0 !important;
     }
 
     /* キャプション（前日の夜に...）の設定 */
     div[data-testid="stCaptionContainer"] p {
-        font-size: 0.8rem !important;
+        font-size: 0.75rem !important;
         color: #555555 !important;
         text-align: center;
-        margin-top: 0 !important; /* 上の余白を消す */
-        margin-bottom: 1rem !important; /* 下の余白を最小限に */
-        line-height: 1.4 !important;
-    }
-    
-    /* 余計なパディングを削除して上に詰める */
-    div[data-testid="stCaptionContainer"] {
-        padding-top: 0 !important;
-        margin-top: -0.5rem !important;
+        margin-top: -0.5rem !important; /* タイトルとの距離を詰める */
+        margin-bottom: 0.5rem !important; /* 下との距離を詰める */
+        line-height: 1.2 !important;
     }
 
     /* ============================
@@ -76,16 +61,17 @@ st.markdown("""
     h3 {
         font-size: 1.1rem !important;
         font-weight: bold !important;
-        margin-top: 0.5rem !important;
+        margin-top: 0 !important; /* 上の余白を削除 */
         margin-bottom: 0.5rem !important;
-        color: #555555 !important; /* 指定色 */
+        padding-top: 0 !important;
+        color: #555555 !important;
     }
     
     /* カスタムラベル（2. 予約希望時間用） */
     .custom-label {
         font-size: 1.1rem;
         font-weight: bold;
-        color: #555555; /* 指定色 */
+        color: #555555;
         margin-bottom: 0.3rem;
         font-family: 'Kosugi Maru', sans-serif;
     }
@@ -122,10 +108,10 @@ st.markdown("""
         border-radius: 8px !important;
         font-weight: bold !important;
         width: 100% !important;
-        padding: 0.8em 0 !important; /* 左右のパディングを減らす */
+        padding: 0.8em 0 !important;
         margin-top: 1rem !important;
         font-size: 1.1rem !important;
-        white-space: nowrap !important; /* ★ここが重要：改行させない */
+        white-space: nowrap !important;
     }
     
     /* 背景設定 */
@@ -140,14 +126,20 @@ elif os.path.exists("logo.jpg"): logo_file = "logo.jpg"
 elif os.path.exists("logo.jpeg"): logo_file = "logo.jpeg"
 
 if logo_file:
+    # 画像の表示（カラムを使って中央寄せしつつサイズ調整）
     col1, col2, col3 = st.columns([1, 4, 1])
     with col2:
         st.image(logo_file, use_container_width=True)
 else:
     st.error("⚠️ 画像が見つかりません。")
 
-# タイトル（表示・変更）
-st.title("事前予約アプリ　〜大村家 専用〜")
+# --- タイトル（改行対応・HTMLで直接記述） ---
+st.markdown("""
+    <h1 style='text-align: center; color: #555555; font-size: 1.2rem; margin-top: -10px; margin-bottom: 5px; line-height: 1.4;'>
+        事前予約アプリ<br>
+        <span style='font-size: 0.9rem;'>〜大村家 専用〜</span>
+    </h1>
+""", unsafe_allow_html=True)
 
 # キャプション
 st.caption("前日の夜にセットし、画面をつけたまま充電して寝てください。")

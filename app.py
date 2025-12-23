@@ -51,25 +51,25 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
     /* ============================
-       1. ダークモード根絶 & 基本設定
+       1. ダークモード完全無効化 & レイアウト
     ============================ */
     :root {
         color-scheme: light only !important;
     }
-    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+    html, body, .stApp {
         background-color: #ffffff !important;
         font-family: 'Kosugi Maru', sans-serif !important;
         color: #555555 !important;
     }
     
-    /* レイアウト調整：上部余白を大幅に増やしてロゴ隠れを防止 */
+    /* コンテンツ全体を大きく下にずらす（ロゴ隠れ防止） */
     .block-container {
-        padding-top: 4rem !important; /* ★ここを増やしました★ */
+        padding-top: 5rem !important; /* 十分な余白を確保 */
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
 
-    /* タイトル調整 */
+    /* タイトル */
     h1 {
         font-size: 1.1rem !important;
         margin-top: 0.5rem !important;
@@ -82,7 +82,7 @@ st.markdown("""
         color: #666666 !important;
     }
     
-    /* ロゴ画像を中央寄せ */
+    /* ロゴ画像の中央寄せ */
     div[data-testid="stImage"] {
         display: flex;
         justify-content: center;
@@ -92,43 +92,38 @@ st.markdown("""
     }
 
     /* ============================
-       2. スマホでのボタン横並び強制設定（はみ出し防止）
+       2. 【最重要】ボタン横並び強制 (親コンテナ制御)
     ============================ */
+    /* 横並びの親箱を「折り返し禁止」にする */
+    div[data-testid="stHorizontalBlock"] {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+    }
+    /* 子カラムの幅を強制指定 */
     div[data-testid="column"] {
-        width: 48% !important; /* 50%だと隙間で溢れるので48%に */
-        flex: 1 1 auto !important;
-        min-width: 0 !important; /* 最小幅制限を解除 */
-        padding: 0 4px !important;
+        flex: 1 1 50% !important;
+        width: 50% !important;
+        min-width: 0 !important;
+        padding: 0 5px !important;
     }
     
     /* ============================
-       3. 入力フォームのデザイン
+       3. 入力フォーム (リスト白文字化)
     ============================ */
     /* ラジオボタン */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
-    div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
-        border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
-    }
-    /* 選択時グリーン */
-    div[role="radiogroup"] label:has(input:checked) p { 
-        color: #4CAF50 !important; 
-        font-weight: bold !important; 
-    }
+    div[role="radiogroup"] label:has(input:checked) p { color: #4CAF50 !important; font-weight: bold !important; }
     div[role="radiogroup"] label:has(input:checked) > div:first-child {
-        border-color: #4CAF50 !important; 
-        background-color: #4CAF50 !important;
+        border-color: #4CAF50 !important; background-color: #4CAF50 !important;
     }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { 
-        fill: #ffffff !important; 
-    }
+    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
 
-    /* ドロップダウンリスト（物理的強制） */
+    /* ドロップダウンリスト（中身を完全に白にする） */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; 
         border-color: #556b2f !important; 
         color: #ffffff !important;
     }
-    /* ★中身の全要素を白に強制★ */
     div[data-baseweb="select"] * { 
         color: #ffffff !important; 
         fill: #ffffff !important; 
@@ -146,20 +141,21 @@ st.markdown("""
     }
 
     /* ============================
-       4. ボタンの基本デザイン（黒化防止）
+       4. ボタン基本リセット (黒化防止)
     ============================ */
     div.stButton > button {
+        width: 100%;
         border-radius: 8px !important;
         font-weight: bold !important;
-        width: 100% !important;
         padding: 0.8em 0 !important;
-        font-size: 0.95rem !important;
+        font-size: 0.9rem !important;
         white-space: nowrap !important;
-        border: none !important;
+        background-image: none !important; /* グラデーション除去 */
+        box-shadow: none !important;
     }
-    
+
     /* ============================
-       5. 情報ボックスのデザイン
+       5. 情報ボックス
     ============================ */
     .info-box-blue {
         background-color: #e3f2fd;
@@ -171,7 +167,6 @@ st.markdown("""
         margin-bottom: 1rem;
         font-weight: bold;
     }
-    /* 警告ボックス (文字色オレンジ) */
     .info-box-yellow {
         background-color: #fff9c4;
         border: 1px solid #fff59d;
@@ -191,7 +186,6 @@ st.markdown("""
         text-align: center;
         margin-bottom: 1rem;
     }
-    
     .confirm-card {
         background-color: #f9f9f9;
         border: 1px solid #eee;
@@ -199,16 +193,10 @@ st.markdown("""
         padding: 1rem;
         margin-bottom: 1.5rem;
     }
-    .card-row {
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px dashed #ddd;
-        padding: 0.5rem 0;
-    }
+    .card-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #ddd; padding: 0.5rem 0; }
     .card-row:last-child { border-bottom: none; }
     .card-label { color: #666 !important; font-weight: bold; }
     .card-value { color: #333 !important; font-weight: bold; font-size: 1.1rem; }
-    
     </style>
 """, unsafe_allow_html=True)
 
@@ -241,19 +229,16 @@ TIME_OPTIONS = [f"{h:02d}:{m:02d}" for h in range(9, 18) for m in [0, 15, 30, 45
 
 # --- Step 1: 入力画面 ---
 if st.session_state.step == 'input':
-    # ★Step1専用：ピンクボタンの中身を完全に白にする★
+    # ★Step1専用：ピンクボタン (backgroundプロパティで強力上書き) ★
     st.markdown("""
         <style>
         div.stButton > button {
-            background-color: #f6adad !important;
+            background: #f6adad !important;
             color: #ffffff !important;
             border: none !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
         }
-        /* ボタンの中の全ての要素を白にする */
-        div.stButton > button * {
-            color: #ffffff !important;
-        }
+        div.stButton > button * { color: #ffffff !important; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -287,36 +272,25 @@ if st.session_state.step == 'input':
 elif st.session_state.step == 'confirm':
     scroll_to_top()
     
-    # ★Step2専用：ボタン配置＆色設定（中身まで指定）★
+    # ★Step2専用：横並びボタンの色分け (backgroundプロパティ使用) ★
     st.markdown("""
         <style>
-        /* 左右分割 */
-        div[data-testid="column"] {
-            width: 48% !important; /* はみ出し防止 */
-            flex: 1 1 auto !important;
-            min-width: 0 !important;
-            padding: 0 4px !important;
-        }
-        /* 左ボタン：白背景・黒文字 */
+        /* 左ボタン：白 */
         div[data-testid="column"]:nth-of-type(1) div.stButton > button {
-            background-color: #ffffff !important;
+            background: #ffffff !important;
             color: #555555 !important;
             border: 1px solid #cccccc !important;
         }
-        div[data-testid="column"]:nth-of-type(1) div.stButton > button * {
-            color: #555555 !important;
-        }
+        div[data-testid="column"]:nth-of-type(1) div.stButton > button * { color: #555555 !important; }
         
-        /* 右ボタン：ピンク背景・白文字 */
+        /* 右ボタン：ピンク */
         div[data-testid="column"]:nth-of-type(2) div.stButton > button {
-            background-color: #f6adad !important;
+            background: #f6adad !important;
             color: #ffffff !important;
             border: none !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
         }
-        div[data-testid="column"]:nth-of-type(2) div.stButton > button * {
-            color: #ffffff !important;
-        }
+        div[data-testid="column"]:nth-of-type(2) div.stButton > button * { color: #ffffff !important; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -357,17 +331,15 @@ elif st.session_state.step == 'confirm':
 elif st.session_state.step == 'running':
     scroll_to_top()
     
-    # ★Step3専用：訂正ボタン(白)CSSを注入★
+    # ★Step3専用：訂正ボタン(白) ★
     st.markdown("""
         <style>
         div.stButton > button {
-            background-color: #ffffff !important;
+            background: #ffffff !important;
             color: #555555 !important;
             border: 1px solid #cccccc !important;
         }
-        div.stButton > button * {
-            color: #555555 !important;
-        }
+        div.stButton > button * { color: #555555 !important; }
         </style>
     """, unsafe_allow_html=True)
     

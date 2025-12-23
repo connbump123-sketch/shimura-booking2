@@ -50,24 +50,24 @@ st.markdown("""
     /* フォント設定（丸ゴシック） */
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
+    /* ============================
+       1. ダークモード対策 & 全体設定
+    ============================ */
+    /* 背景を白に強制 */
+    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+        background-color: #ffffff !important;
+    }
+    
     /* 基本テキスト色：濃いグレー(#555) */
     html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, label {
         font-family: 'Kosugi Maru', sans-serif !important;
         color: #555555 !important;
         -webkit-font-smoothing: antialiased;
     }
-    
-    /* 背景色を白に固定（ダークモード対策） */
-    [data-testid="stAppViewContainer"] {
-        background-color: #ffffff !important;
-    }
-    .stApp {
-        background-color: #ffffff !important;
-    }
 
-    /* レイアウト調整：上部余白を確保してロゴ見切れを防止 */
+    /* レイアウト調整：上部余白 */
     .block-container {
-        padding-top: 2rem !important; /* ここを増やしました */
+        padding-top: 1.5rem !important;
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
@@ -86,24 +86,25 @@ st.markdown("""
     }
 
     /* ============================
-       【重要】スマホでのボタン横並び強制設定
+       2. 【重要】スマホでのボタン横並び強制設定
     ============================ */
     /* カラムを画面幅の50%ずつに強制分割 */
     div[data-testid="column"] {
         width: 50% !important;
         flex: 1 1 auto !important;
         min-width: 50% !important;
-        padding: 0 5px !important; /* ボタン同士の間隔調整 */
+        padding: 0 5px !important;
     }
     
     /* ============================
-       入力フォームのデザイン
+       3. 入力フォームのデザイン
     ============================ */
-    /* ラジオボタン (選択時グリーン) */
+    /* ラジオボタン */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
         border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
     }
+    /* 選択時グリーン */
     div[role="radiogroup"] label:has(input:checked) p { 
         color: #4CAF50 !important; 
         font-weight: bold !important; 
@@ -115,7 +116,6 @@ st.markdown("""
     div[role="radiogroup"] label:has(input:checked) > div:first-child svg { 
         fill: #ffffff !important; 
     }
-    div[role="radiogroup"] p { font-size: 1rem !important; }
 
     /* ドロップダウンリスト（モスグリーン背景・白文字） */
     div[data-baseweb="select"] > div {
@@ -123,16 +123,16 @@ st.markdown("""
         border-color: #556b2f !important; 
         color: #ffffff !important;
     }
-    /* 選択中の文字を白に強制 */
+    /* ★文字色を白に強制★ */
     div[data-baseweb="select"] span { 
         color: #ffffff !important; 
     }
-    /* 矢印アイコンを白に強制 */
+    /* ★矢印アイコンを白に強制★ */
     div[data-baseweb="select"] svg { 
         fill: #ffffff !important; 
     }
     
-    /* リストが開いた時 */
+    /* ポップアップメニュー */
     div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
         background-color: #556b2f !important;
     }
@@ -144,20 +144,20 @@ st.markdown("""
     }
 
     /* ============================
-       ボタンの基本デザイン
+       4. ボタンの基本デザイン
     ============================ */
     div.stButton > button {
-        border: none !important;
         border-radius: 8px !important;
         font-weight: bold !important;
         width: 100% !important;
         padding: 0.8em 0 !important;
-        font-size: 1.0rem !important; /* スマホで並んだ時に文字が溢れないよう調整 */
+        font-size: 1.0rem !important;
         white-space: nowrap !important;
+        border: none !important;
     }
 
     /* ============================
-       情報ボックスのデザイン
+       5. 情報ボックスのデザイン
     ============================ */
     .info-box-blue {
         background-color: #e3f2fd;
@@ -261,7 +261,7 @@ if st.session_state.step == 'input':
             label_visibility="collapsed"
         )
 
-    # ピンクボタン（文字色を白に）
+    # ピンクボタン（文字色を白に固定）
     st.markdown("""
         <style>
         div.stButton > button {
@@ -306,7 +306,7 @@ elif st.session_state.step == 'confirm':
         </div>
     """, unsafe_allow_html=True)
 
-    # ボタンエリア（CSSで個別色指定 & 横並び）
+    # ボタンエリア（CSSで個別色指定 & 横並び強制）
     col1, col2 = st.columns(2)
     
     with col1:

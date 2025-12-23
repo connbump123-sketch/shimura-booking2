@@ -19,52 +19,75 @@ st.set_page_config(
 # --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* 1. 全体のレイアウトをコンパクトに（1画面に収める） */
+    /* 1. ヘッダー被り対策：全体の開始位置を大きく下げる */
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 4rem !important; /* 余白を広げました */
         padding-bottom: 2rem !important;
         max-width: 100% !important;
     }
     
-    /* 2. タイトルのサイズ縮小 */
+    /* 2. タイトルのサイズ調整 */
     h1 {
         font-size: 1.4rem !important;
         margin-bottom: 0.2rem !important;
-        color: #444444 !important;
-    }
-    p {
-        font-size: 0.9rem !important;
-        margin-bottom: 0.5rem !important;
-        color: #666666 !important;
+        color: #333333 !important;
     }
     
-    /* 3. 見出しの調整 */
-    h3 {
-        font-size: 1.1rem !important;
-        margin-top: 0.5rem !important;
-        margin-bottom: 0.2rem !important;
-        padding: 0 !important;
-        color: #4CAF50 !important; /* 緑色 */
-    }
-    
-    /* 4. ラジオボタンのデザイン変更 (緑基調) */
-    /* 選択されていない状態（グレー） */
-    div[role="radiogroup"] label span {
-        color: #555555 !important; /* 濃いグレー */
+    /* 3. ラジオボタンのデザイン (緑基調) */
+    /* テキストの色（通常時は濃いグレー） */
+    div[role="radiogroup"] p {
+        color: #555555 !important;
         font-weight: bold !important;
     }
-    /* 選択された状態（緑枠・中白） */
-    div[role="radiogroup"] div[aria-checked="true"] {
+    
+    /* 未選択の丸（グレー枠、中白） */
+    div[role="radiogroup"] label > div:first-child {
+        border: 2px solid #9e9e9e !important;
         background-color: #ffffff !important;
-        border: 2px solid #4CAF50 !important; /* 緑の枠 */
     }
-    div[role="radiogroup"] div[aria-checked="true"] > div {
-        background-color: #4CAF50 !important; /* 中の点も緑 */
+    
+    /* 選択された状態（ここを修正：緑背景、中白） */
+    /* :hasセレクタを使用して、チェックされた状態を狙い撃ちします */
+    div[role="radiogroup"] label:has(input:checked) > div:first-child {
+        border-color: #4CAF50 !important; /* サイトの緑 */
+        background-color: #4CAF50 !important;
     }
-    /* 未選択の丸（グレー） */
-    div[role="radiogroup"] div[aria-checked="false"] {
-        border: 2px solid #9e9e9e !important; /* 薄いグレー */
+    /* 中の白い点（SVG） */
+    div[role="radiogroup"] label:has(input:checked) > div:first-child svg {
+        fill: #ffffff !important;
+    }
+    /* 選択された時のテキスト色 */
+    div[role="radiogroup"] label:has(input:checked) p {
+        color: #4CAF50 !important;
+    }
+
+    /* 4. ドロップダウンリスト（モスグリーン） */
+    /* リストのコンテナ（ポップオーバー） */
+    div[data-baseweb="popover"] div[role="listbox"],
+    div[data-baseweb="popover"] ul {
+        background-color: #556b2f !important; /* モスグリーン */
+    }
+    /* リスト内の文字色（白） */
+    div[data-baseweb="popover"] li, 
+    div[data-baseweb="popover"] div {
+        color: #ffffff !important;
+    }
+    /* 選択中の項目のハイライト */
+    div[data-baseweb="popover"] li[aria-selected="true"],
+    div[data-baseweb="popover"] li:hover {
+        background-color: #3b4a1c !important; /* さらに濃いモスグリーン */
+        color: #ffffff !important;
+    }
+    
+    /* 入力ボックス自体の色修正 */
+    div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
+        border-color: #cccccc !important;
+        color: #333333 !important;
+    }
+    /* 選択後の表示文字色 */
+    div[data-baseweb="select"] span {
+        color: #333333 !important;
     }
 
     /* 5. 実行ボタン（ピンク） */
@@ -74,7 +97,7 @@ st.markdown("""
         border: none !important;
         border-radius: 8px !important;
         font-weight: bold !important;
-        width: 100% !important; /* 幅いっぱいに */
+        width: 100% !important;
         padding: 0.5em 1em !important;
         margin-top: 0.5rem !important;
     }
@@ -106,10 +129,10 @@ st.subheader("1. 予約設定")
 with st.container():
     # 子供選択
     target_child_str = st.radio(
-        "予約するお子様", # ラベルは非表示設定不可だがCSSで調整済
+        "予約するお子様",
         ["オオムラ イブキ 様 (12979)", "オオムラ エリナ 様 (10865)"],
         index=0,
-        label_visibility="collapsed" # ラベルを隠してコンパクトに
+        label_visibility="collapsed"
     )
 
     # 時間選択
@@ -160,9 +183,9 @@ if st.button("🌙 おやすみ前セット（待機開始）"):
     # --- Phase 1: 待機 (ロングスリープ) ---
     status_placeholder.markdown(f"""
         <div class="status-box">
-            <h3 style="margin:0; font-size:1rem;">✅ セット完了</h3>
-            <p style="margin:0;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします。</p>
-            <p style="color:red; font-weight:bold; margin-top:0.5rem;">⚠️ 画面を消さないで！</p>
+            <h3 style="margin:0; font-size:1rem; color:#4CAF50;">✅ セット完了</h3>
+            <p style="margin:0; color:#555;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします。</p>
+            <p style="color:#d32f2f; font-weight:bold; margin-top:0.5rem; font-size:0.9rem;">⚠️ 画面を消さないでください</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -181,7 +204,7 @@ if st.button("🌙 おやすみ前セット（待機開始）"):
     # --- Phase 2: 先行ログイン & 待機 ---
     status_placeholder.markdown("""
         <div class="status-box">
-            <h3 style="margin:0; font-size:1rem;">🚀 先行ログイン中...</h3>
+            <h3 style="margin:0; font-size:1rem; color:#4CAF50;">🚀 先行ログイン中...</h3>
         </div>
     """, unsafe_allow_html=True)
     
@@ -211,8 +234,8 @@ if st.button("🌙 おやすみ前セット（待機開始）"):
             
             status_placeholder.markdown(f"""
                 <div class="status-box">
-                    <h3 style="margin:0; font-size:1rem;">🕒 6:00 待機中...</h3>
-                    <p style="margin:0;">あと <b>{int(remaining)}</b> 秒</p>
+                    <h3 style="margin:0; font-size:1rem; color:#4CAF50;">🕒 6:00 待機中...</h3>
+                    <p style="margin:0; color:#555;">あと <b>{int(remaining)}</b> 秒</p>
                 </div>
             """, unsafe_allow_html=True)
             

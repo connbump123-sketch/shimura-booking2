@@ -139,10 +139,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # キャプション（変更）
-st.caption("前日のうちに予約できます！")
+st.caption("前日のうちに予約できるよ！")
 
 # --- 1. 予約設定 ---
-st.subheader("1. 予約設定")
+st.subheader("1. キッズを選択")
 
 with st.container():
     # 子供選択

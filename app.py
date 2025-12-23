@@ -17,6 +17,8 @@ if 'target_child_val' not in st.session_state:
     st.session_state.target_child_val = 0
 if 'target_time_val' not in st.session_state:
     st.session_state.target_time_val = 0
+if 'show_cancel_confirm' not in st.session_state:
+    st.session_state.show_cancel_confirm = False
 
 # --- ページ設定 ---
 st.set_page_config(
@@ -29,9 +31,8 @@ st.set_page_config(
 # --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* フォント設定（丸ゴシック） */
+    /* 全体フォント設定 */
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
-    
     html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, button, input, select, label {
         font-family: 'Kosugi Maru', "Hiragino Maru Gothic ProN", "HGMaruGothicMPRO", "Yu Gothic Medium", "Yu Gothic", sans-serif !important;
         -webkit-font-smoothing: antialiased;
@@ -40,7 +41,7 @@ st.markdown("""
     /* レイアウト設定 */
     .block-container {
         padding-top: 0.5rem !important;
-        padding-bottom: 5rem !important; 
+        padding-bottom: 20rem !important; 
         max-width: 100% !important;
     }
     div[data-testid="column"] { padding: 0 !important; }
@@ -63,24 +64,6 @@ st.markdown("""
         color: #555555 !important;
     }
     
-    /* 入力フォーム設定 */
-    div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
-    div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
-        border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
-    }
-    div[role="radiogroup"] label:has(input:checked) p { color: #4CAF50 !important; font-weight: bold !important; }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child {
-        border-color: #4CAF50 !important; background-color: #4CAF50 !important;
-    }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
-    div[role="radiogroup"] p { font-size: 1rem !important; }
-
-    div[data-baseweb="select"] > div {
-        background-color: #556b2f !important; border-color: #556b2f !important; color: #ffffff !important;
-    }
-    div[data-baseweb="select"] span { color: #ffffff !important; font-size: 1rem !important; }
-    div[data-baseweb="select"] svg { fill: #ffffff !important; }
-    
     /* ボタン共通設定 */
     div.stButton > button {
         border: none !important;
@@ -88,17 +71,22 @@ st.markdown("""
         font-weight: bold !important;
         width: 100% !important;
         padding: 0.8em 0 !important;
-        font-size: 1.1rem !important;
+        font-size: 1.0rem !important;
         white-space: nowrap !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+    }
+    div.stButton > button:active {
+        transform: translateY(2px);
+        box-shadow: none !important;
     }
     
-    /* 予約内容確認ボックス（コンパクト化） */
+    /* 予約内容確認ボックス */
     .info-card {
         background-color: #f8fcf8;
         border: 1px solid #e0e0e0;
         border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0 1.5rem 0; /* 上下の余白調整 */
+        padding: 1.2rem;
+        margin: 1rem 0;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     .info-row {
@@ -111,16 +99,6 @@ st.markdown("""
     .info-label { font-weight: bold; color: #666; }
     .info-val { font-weight: bold; color: #333; font-size: 1.1rem; }
 
-    /* 待機中ステータス */
-    .status-card-green {
-        background-color: #e8f5e9;
-        border: 2px solid #4CAF50;
-        border-radius: 10px;
-        padding: 1.5rem;
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-    
     .stApp { background-color: #ffffff !important; }
     </style>
 """, unsafe_allow_html=True)
@@ -146,6 +124,8 @@ st.markdown("""
     </h1>
 """, unsafe_allow_html=True)
 
+st.caption("前日のうちに予約できます！")
+
 # ==========================================
 #  ロジック定義
 # ==========================================
@@ -156,8 +136,6 @@ TIME_OPTIONS = [f"{h:02d}:{m:02d}" for h in range(9, 18) for m in [0, 15, 30, 45
 
 # --- Step 1: 入力画面 ---
 if st.session_state.step == 'input':
-    st.caption("前日のうちに予約できます！")
-    
     st.subheader("1. 予約設定")
     with st.container():
         target_child_str = st.radio(
@@ -167,7 +145,7 @@ if st.session_state.step == 'input':
             label_visibility="collapsed"
         )
         st.write("")
-        st.markdown('<div class="custom-label">2. 予約希望時間</div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size: 1.1rem; font-weight: bold; color: #555555; margin-bottom: 0.3rem;">2. 予約希望時間</div>', unsafe_allow_html=True)
         target_time_str = st.selectbox(
             "予約希望時間（ラベル非表示）",
             TIME_OPTIONS,
@@ -175,57 +153,86 @@ if st.session_state.step == 'input':
             label_visibility="collapsed"
         )
 
-    # 次へボタン
+    # 次へボタン（ピンク）
     st.markdown('<style>div.stButton > button {background-color: #f6adad !important; color: white !important;}</style>', unsafe_allow_html=True)
-    st.write("")
     if st.button("🌙 おやすみ前セット（確認へ）"):
         st.session_state.target_child_val = CHILD_OPTIONS.index(target_child_str)
         st.session_state.target_time_val = TIME_OPTIONS.index(target_time_str)
         st.session_state.step = 'confirm'
+        st.session_state.show_cancel_confirm = False
         st.rerun()
 
-# --- Step 2: 確認画面（1画面で完結） ---
+# --- Step 2: 確認画面（セーフティネット） ---
 elif st.session_state.step == 'confirm':
     
-    # メッセージ：まだ始まっていないことを強調
-    st.info("まだ予約は始まっていません。下のボタンで開始してください。")
+    # CSS: 左ボタン(ピンク)と右ボタン(緑)を分けるためのスタイル
+    st.markdown("""
+    <style>
+    /* 左のカラムのボタン (訂正/戻る) -> ピンク */
+    div[data-testid="column"]:nth-of-type(1) div.stButton > button {
+        background-color: #f6adad !important;
+        color: white !important;
+    }
+    /* 右のカラムのボタン (開始/続行) -> 緑 */
+    div[data-testid="column"]:nth-of-type(2) div.stButton > button {
+        background-color: #4CAF50 !important;
+        color: white !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # 警告メッセージ
+    if st.session_state.show_cancel_confirm:
+         st.error("🛑 本当に設定を取り消して、最初の画面に戻りますか？")
+    else:
+         st.warning("⚠️ 画面がスリープにならないように設定してから寝てね！")
 
-    # 予約内容の表示（カード型）
+    # 予約内容の表示
     selected_child = CHILD_OPTIONS[st.session_state.target_child_val]
     selected_time = TIME_OPTIONS[st.session_state.target_time_val]
     
     st.markdown(f"""
         <div class="info-card">
-            <h3 style="margin-top:0; border-bottom:2px solid #4CAF50; padding-bottom:5px; font-size:1rem;">📋 予約内容の確認</h3>
+            <h3 style="margin-top:0; border-bottom:2px solid #4CAF50; padding-bottom:5px;">📋 予約内容の確認</h3>
             <div class="info-row" style="margin-top:10px;">
                 <span class="info-label">予約者</span>
                 <span class="info-val">{selected_child.split(' ')[0]} {selected_child.split(' ')[1]}</span>
             </div>
             <div class="info-row" style="border-bottom:none;">
                 <span class="info-label">希望時間</span>
-                <span class="info-val" style="color:#e91e63; font-size:1.3rem;">{selected_time}</span>
+                <span class="info-val" style="color:#e91e63; font-size:1.4rem;">{selected_time}</span>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
-    # --- ボタンエリア（横並びでコンパクトに） ---
-    col1, col2 = st.columns([1, 1.5])
+    # --- 操作ボタンエリア（横並び） ---
+    col1, col2 = st.columns(2)
     
-    with col1:
-        # 訂正ボタン（白/グレー）
-        st.markdown('<style>div.stButton > button {background-color: #ffffff !important; color: #555555 !important; border: 1px solid #cccccc !important;}</style>', unsafe_allow_html=True)
-        if st.button("訂正する"):
-            st.session_state.step = 'input'
-            st.rerun()
-            
-    with col2:
-        # 開始ボタン（ピンク）
-        st.markdown('<style>div.stButton > button {background-color: #f6adad !important; color: white !important; border: none !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}</style>', unsafe_allow_html=True)
-        if st.button("🚀 待機モード開始"):
-            st.session_state.step = 'running'
-            st.rerun()
+    # 分岐処理
+    if st.session_state.show_cancel_confirm:
+        # 【確認モード】
+        with col1:
+            if st.button("はい (戻る)"):
+                st.session_state.step = 'input'
+                st.session_state.show_cancel_confirm = False
+                st.rerun()
+        with col2:
+            if st.button("いいえ (続行)"):
+                st.session_state.show_cancel_confirm = False
+                st.rerun()
+    else:
+        # 【通常モード】
+        with col1:
+            if st.button("訂正する"):
+                st.session_state.show_cancel_confirm = True
+                st.rerun()
+        with col2:
+            if st.button("🚀 待機開始"):
+                st.session_state.step = 'running'
+                st.rerun()
 
-# --- Step 3: 待機実行画面（不要なものを削除） ---
+
+# --- Step 3: 実行画面（ループ突入） ---
 elif st.session_state.step == 'running':
     
     selected_child = CHILD_OPTIONS[st.session_state.target_child_val]
@@ -239,13 +246,10 @@ elif st.session_state.step == 'running':
     TARGET_M_JP = f"{TARGET_H}時{TARGET_M}分"
     START_URL = "https://shimura-kids.com/yoyaku/php/line_login.php"
 
-    # --- 画面スリープ警告 (Step3の最重要情報) ---
-    st.warning("⚠️ 画面がスリープにならないように設定してから寝てね！")
-
-    # 最終ステータス表示
+    st.warning("⚠️ 待機中はボタン操作ができません。中止する場合はブラウザを再読み込みしてください。")
+    
     status_placeholder = st.empty()
 
-    # 時間計算
     jst = pytz.timezone('Asia/Tokyo')
     now = datetime.datetime.now(jst)
     target_dt = now.replace(hour=6, minute=0, second=0, microsecond=0)
@@ -254,34 +258,23 @@ elif st.session_state.step == 'running':
     
     login_start_dt = target_dt - datetime.timedelta(minutes=10)
 
-    # --- Phase 1: 待機表示 ---
+    # Phase 1: 待機
     status_placeholder.markdown(f"""
-        <div class="status-card-green">
-            <h2 style="margin:0; color:#2e7d32; font-size:1.5rem;">💤 待機中...</h2>
-            <p style="font-size:1.1rem; margin:10px 0;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします</p>
-            <p style="font-size:0.9rem; color:#666; margin-top:10px;">(予約対象: {TARGET_NAME} 様)</p>
+        <div style="padding:1.5rem; border-radius:10px; background-color:#e8f5e9; border:2px solid #4CAF50; text-align:center;">
+            <h2 style="margin:0; color:#2e7d32;">💤 待機中...</h2>
+            <p style="font-size:1.2rem; margin:10px 0;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします</p>
+            <p style="margin:0; color:#555;">予約: {TARGET_NAME} 様 ({selected_time})</p>
         </div>
     """, unsafe_allow_html=True)
     
-    # --- 訂正・中止ボタンエリア ---
-    st.write("")
-    st.markdown('<style>div.stButton > button {background-color: #eeeeee !important; color: #777 !important; font-size: 0.9rem !important;}</style>', unsafe_allow_html=True)
-    
-    # ⚠️ 注意: ループ中はボタンが反応しにくいため、注釈を入れる
-    if st.button("訂正・中止する"):
-        st.session_state.step = 'input'
-        st.rerun()
-    st.caption("※ ボタンが反応しない場合は、ブラウザを再読み込みしてください。")
-    
-    # 待機ループ
     while True:
         now = datetime.datetime.now(jst)
         wait_sec = (login_start_dt - now).total_seconds()
         if wait_sec <= 0: break
-        # ボタンの反応を少しでも良くするため、sleepを小刻みに
-        time.sleep(1) 
+        if wait_sec > 60: time.sleep(10)
+        else: time.sleep(1)
 
-    # --- Phase 2: 先行ログイン ---
+    # Phase 2: 先行ログイン
     status_placeholder.info("🚀 先行ログインを実行中...")
     
     def get_driver():

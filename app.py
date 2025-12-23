@@ -13,7 +13,7 @@ import os
 # --- ページ設定 ---
 st.set_page_config(
     page_title="しむら小児科予約",
-    page_icon="🏥",
+    page_icon="",
     layout="centered",
     initial_sidebar_state="collapsed"
 )

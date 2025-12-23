@@ -47,25 +47,24 @@ def scroll_to_top():
 # --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* フォント設定（丸ゴシック） */
+    /* フォント設定 */
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
     /* ============================
-       1. ダークモード対策 & 全体設定
+       1. ダークモード完全無効化 (背景白)
     ============================ */
-    /* 背景を白に強制 */
     .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
         background-color: #ffffff !important;
     }
     
-    /* 基本テキスト色：濃いグレー(#555) */
+    /* 基本テキスト色：濃いグレー */
     html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, label, li {
         font-family: 'Kosugi Maru', sans-serif !important;
         color: #555555 !important;
         -webkit-font-smoothing: antialiased;
     }
 
-    /* レイアウト調整：上部余白 */
+    /* レイアウト調整 */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 5rem !important; 
@@ -85,7 +84,7 @@ st.markdown("""
         color: #666666 !important;
     }
     
-    /* ロゴ画像を中央寄せにするためのCSS */
+    /* ロゴ画像を中央寄せ */
     div[data-testid="stImage"] {
         display: flex;
         justify-content: center;
@@ -95,9 +94,8 @@ st.markdown("""
     }
 
     /* ============================
-       2. 【重要】スマホでのボタン横並び強制設定
+       2. スマホでのボタン横並び強制設定
     ============================ */
-    /* Streamlitのcolumnはスマホで縦になるため、無理やり50%幅にして並べる */
     div[data-testid="column"] {
         width: 50% !important;
         flex: 1 1 auto !important;
@@ -132,17 +130,18 @@ st.markdown("""
         border-color: #556b2f !important; 
         color: #ffffff !important;
     }
-    /* ★中身の文字色を白に強制★ */
+    /* ★中身の文字色を白に強制（pタグやdivタグ全て）★ */
     div[data-baseweb="select"] * { 
         color: #ffffff !important; 
         fill: #ffffff !important; 
     }
     
-    /* ポップアップメニュー */
+    /* ポップアップメニュー (リストの中身) */
     div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
         background-color: #556b2f !important;
     }
-    div[data-baseweb="popover"] li {
+    /* ★リスト内の文字も白に強制★ */
+    div[data-baseweb="popover"] * {
         color: #ffffff !important;
     }
     div[data-baseweb="popover"] li:hover {
@@ -150,18 +149,18 @@ st.markdown("""
     }
 
     /* ============================
-       4. ボタンの基本デザイン
+       4. ボタンの基本デザイン（黒化防止）
     ============================ */
     div.stButton > button {
         border-radius: 8px !important;
         font-weight: bold !important;
         width: 100% !important;
         padding: 0.8em 0 !important;
-        font-size: 0.95rem !important; /* スマホで並んだ時に溢れないサイズ */
+        font-size: 0.95rem !important;
         white-space: nowrap !important;
         border: none !important;
     }
-
+    
     /* ============================
        5. 情報ボックスのデザイン
     ============================ */
@@ -175,7 +174,6 @@ st.markdown("""
         margin-bottom: 1rem;
         font-weight: bold;
     }
-    /* 警告ボックス (文字色オレンジ) */
     .info-box-yellow {
         background-color: #fff9c4;
         border: 1px solid #fff59d;
@@ -196,7 +194,6 @@ st.markdown("""
         margin-bottom: 1rem;
     }
     
-    /* 予約確認カード */
     .confirm-card {
         background-color: #f9f9f9;
         border: 1px solid #eee;
@@ -217,14 +214,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- ヘッダー（ロゴ）: columnsを使わずst.imageだけで表示 ---
+# --- ヘッダー（ロゴ） ---
 logo_file = None
 if os.path.exists("logo.png"): logo_file = "logo.png"
 elif os.path.exists("logo.jpg"): logo_file = "logo.jpg"
 elif os.path.exists("logo.jpeg"): logo_file = "logo.jpeg"
 
 if logo_file:
-    # CSSで中央寄せしているので、そのまま表示するだけでOK
     st.image(logo_file, width=300) 
 else:
     st.error("ロゴ画像なし")
@@ -266,13 +262,17 @@ if st.session_state.step == 'input':
             label_visibility="collapsed"
         )
 
-    # ピンクボタン（文字色を白に固定）
+    # ピンクボタン（文字色を白に強制固定）
     st.markdown("""
         <style>
         div.stButton > button {
             background-color: #f6adad !important;
             color: #ffffff !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        /* ボタンの中のpタグも白に強制 */
+        div.stButton > button p {
+            color: #ffffff !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -311,7 +311,7 @@ elif st.session_state.step == 'confirm':
         </div>
     """, unsafe_allow_html=True)
 
-    # ボタンエリア（CSSで個別色指定 & 横並び強制）
+    # ボタンエリア（個別に色指定・黒化防止）
     col1, col2 = st.columns(2)
     
     with col1:
@@ -323,6 +323,9 @@ elif st.session_state.step == 'confirm':
                 color: #555555 !important;
                 border: 1px solid #cccccc !important;
                 box-shadow: none !important;
+            }
+            div[data-testid="column"]:nth-of-type(1) div.stButton > button p {
+                color: #555555 !important;
             }
             </style>
         """, unsafe_allow_html=True)
@@ -339,6 +342,9 @@ elif st.session_state.step == 'confirm':
                 color: #ffffff !important;
                 border: none !important;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+            }
+            div[data-testid="column"]:nth-of-type(2) div.stButton > button p {
+                color: #ffffff !important;
             }
             </style>
         """, unsafe_allow_html=True)
@@ -387,7 +393,7 @@ elif st.session_state.step == 'running':
     """, unsafe_allow_html=True)
 
     st.write("")
-    # 訂正ボタン（白背景）
+    # 訂正ボタン（白背景・文字グレー）
     st.markdown("""
         <style>
         div.stButton > button {
@@ -395,6 +401,9 @@ elif st.session_state.step == 'running':
             color: #555555 !important;
             border: 1px solid #cccccc !important;
             font-size: 0.9rem !important;
+        }
+        div.stButton > button p {
+            color: #555555 !important;
         }
         </style>
     """, unsafe_allow_html=True)

@@ -53,7 +53,7 @@ st.markdown("""
         margin-top: 0.5rem !important;
         margin-bottom: 0.3rem !important;
         padding: 0 !important;
-        color: #4CAF50 !important;
+        color: #555555 !important;
         font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important;
     }
     

@@ -19,114 +19,95 @@ st.set_page_config(
 # --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* 1. 全体レイアウト & 下開き対策 */
+    /* 1. 全体レイアウト & 上下の余白調整 */
+    /* 上部の余白を極限まで削り(0.5rem)、下部に巨大な余白(15rem)を確保 */
     .block-container {
-        padding-top: 3rem !important;
-        padding-bottom: 10rem !important; /* 下に大きな余白を作り、リストを下に開かせる */
+        padding-top: 0.5rem !important;
+        padding-bottom: 15rem !important; 
         max-width: 100% !important;
     }
     
-    /* 2. 見出しのデザイン統一 */
-    h3 {
-        font-size: 1.1rem !important;
+    /* 2. タイトル（しむら小児科 事前予約）の極小化 */
+    h1 {
+        font-size: 0.9rem !important; /* サイズを半分程度に */
         font-weight: bold !important;
-        margin-top: 1rem !important;
-        margin-bottom: 0.5rem !important;
+        margin-bottom: 0 !important; /* 下の余白を消す */
+        padding-bottom: 0 !important;
+        color: #555555 !important; /* 濃いめのグレー */
+        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important;
+    }
+    
+    /* 3. キャプション（前日の夜に～）のデザイン */
+    div[data-testid="stCaptionContainer"] p {
+        font-size: 0.75rem !important;
+        color: #555555 !important; /* 濃いめのグレー */
+        margin-top: 0.2rem !important; /* 上の余白を詰める */
+        margin-bottom: 1rem !important;
+    }
+    
+    /* 4. 見出し（1. 予約設定 など）のデザイン */
+    h3 {
+        font-size: 1.0rem !important;
+        font-weight: bold !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.3rem !important;
         padding: 0 !important;
-        color: #4CAF50 !important; /* 緑色 */
-        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important; /* iOSフォント優先 */
+        color: #4CAF50 !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important;
     }
     
     /* カスタムラベル（2. 予約希望時間用） */
     .custom-label {
-        font-size: 1.1rem;
+        font-size: 1.0rem;
         font-weight: bold;
-        color: #555555; /* 濃いめのグレー */
+        color: #555555;
         margin-bottom: 0.3rem;
         font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
     }
 
-    /* 3. ラジオボタンのデザイン */
-    /* 未選択のテキスト（薄いグレー） */
-    div[role="radiogroup"] label:not(:has(input:checked)) p {
-        color: #cccccc !important;
-    }
-    /* 未選択の丸（薄いグレー） */
+    /* 5. ラジオボタンのデザイン */
+    /* 未選択（薄いグレー） */
+    div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
-        border: 2px solid #e0e0e0 !important;
-        background-color: #fafafa !important;
+        border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
     }
-    
-    /* 選択済みのテキスト（濃い緑） */
-    div[role="radiogroup"] label:has(input:checked) p {
-        color: #4CAF50 !important;
-        font-weight: bold !important;
-    }
-    /* 選択済みの丸（緑背景、中白） */
+    /* 選択済み（緑背景・中白） */
+    div[role="radiogroup"] label:has(input:checked) p { color: #4CAF50 !important; font-weight: bold !important; }
     div[role="radiogroup"] label:has(input:checked) > div:first-child {
-        border-color: #4CAF50 !important;
-        background-color: #4CAF50 !important;
+        border-color: #4CAF50 !important; background-color: #4CAF50 !important;
     }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child svg {
-        fill: #ffffff !important;
-    }
+    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
 
-    /* 4. ドロップダウンリスト（常時モスグリーン） */
-    /* 閉じてる時のボックス自体 */
+    /* 6. ドロップダウンリスト（モスグリーン固定） */
+    /* 閉じてる時 */
     div[data-baseweb="select"] > div {
-        background-color: #556b2f !important; /* モスグリーン */
-        border-color: #556b2f !important;
-        color: #ffffff !important;
+        background-color: #556b2f !important; border-color: #556b2f !important; color: #ffffff !important;
     }
-    /* 選択されている文字（白） */
-    div[data-baseweb="select"] span {
-        color: #ffffff !important;
-    }
-    /* 右側の矢印アイコン（白） */
-    div[data-baseweb="select"] svg {
-        fill: #ffffff !important;
-    }
-
-    /* 開いた時のリスト（ポップオーバー） */
-    div[data-baseweb="popover"] div[role="listbox"],
-    div[data-baseweb="popover"] ul {
+    div[data-baseweb="select"] span, div[data-baseweb="select"] svg { color: #ffffff !important; fill: #ffffff !important; }
+    
+    /* 開いた時（ポップオーバー） */
+    div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
         background-color: #556b2f !important;
     }
-    div[data-baseweb="popover"] li, 
-    div[data-baseweb="popover"] div {
-        color: #ffffff !important;
-    }
-    /* ホバー/選択時 */
-    div[data-baseweb="popover"] li[aria-selected="true"],
-    div[data-baseweb="popover"] li:hover {
-        background-color: #3b4a1c !important; /* 濃いモスグリーン */
+    div[data-baseweb="popover"] li, div[data-baseweb="popover"] div { color: #ffffff !important; }
+    div[data-baseweb="popover"] li:hover, div[data-baseweb="popover"] li[aria-selected="true"] {
+        background-color: #3b4a1c !important;
     }
 
-    /* 5. 実行ボタン */
+    /* 7. 実行ボタン */
     div.stButton > button {
-        background-color: #f6adad !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: bold !important;
-        width: 100% !important;
-        padding: 0.8em 1em !important; /* タップしやすいよう少し大きく */
-        margin-top: 1rem !important;
+        background-color: #f6adad !important; color: white !important; border: none !important;
+        border-radius: 8px !important; font-weight: bold !important; width: 100% !important;
+        padding: 0.8em 1em !important; margin-top: 0.5rem !important;
     }
-    div.stButton > button:hover {
-        background-color: #e09090 !important;
-    }
-
-    /* 6. 背景白・文字色設定 */
-    .stApp {
-        background-color: #ffffff !important;
-    }
-    p, span {
-        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important;
-    }
+    
+    /* 8. 背景設定 */
+    .stApp { background-color: #ffffff !important; }
+    p, span { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important; }
     </style>
 """, unsafe_allow_html=True)
 
+# タイトル（サイズ縮小適用済み）
 st.title("🏥 しむら小児科 事前予約")
 st.caption("前日の夜にセットし、画面をつけたまま充電して寝てください。")
 
@@ -142,10 +123,10 @@ with st.container():
         label_visibility="collapsed"
     )
 
-    # スペース調整
+    # スペース調整（最小限に）
     st.write("") 
 
-    # 時間選択（カスタムラベルを使用）
+    # 時間選択
     st.markdown('<div class="custom-label">2. 予約希望時間</div>', unsafe_allow_html=True)
     
     target_time_str = st.selectbox(
@@ -153,7 +134,7 @@ with st.container():
         [f"{h:02d}:{m:02d}" for h in range(9, 18) for m in [0, 15, 30, 45] 
          if not (h == 12 and m > 0) and not (h > 12 and h < 15) and not (h == 17 and m > 30)],
         index=0,
-        label_visibility="collapsed" # デフォルトラベルは消す
+        label_visibility="collapsed"
     )
 
 # 設定値抽出
@@ -207,18 +188,19 @@ if st.button("🌙 おやすみ前セット（待機開始）"):
         </div>
     ''', unsafe_allow_html=True)
     
-    # 実際はここで待機ループが入ります...
-    # while True: ...
-    
+    # 待機ループ
+    while True:
+        now = datetime.datetime.now(jst)
+        wait_sec = (login_start_dt - now).total_seconds()
+        if wait_sec <= 0: break
+        if wait_sec > 60: time.sleep(10)
+        else: time.sleep(1)
+
     driver = None
     try:
         # driver = get_driver()
-        # ... (中略) ...
-        
-        # 最終クリック
-        # final_btn.click() 
+        # ...
         pass
-
     except Exception as e:
         st.error(f"エラー: {e}")
     finally:

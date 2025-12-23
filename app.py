@@ -26,7 +26,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- スクロール制御関数 ---
+# --- スクロール関数 ---
 def scroll_to_top():
     js = '''
     <script>
@@ -44,131 +44,153 @@ def scroll_to_top():
     '''
     components.html(js, height=0)
 
-# --- デザイン調整 (CSS：前々回の配色設定を復元) ---
+# --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* 1. フォント設定 */
+    /* フォント設定（丸ゴシック） */
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
-    html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, button, input, select, label {
-        font-family: 'Kosugi Maru', "Hiragino Maru Gothic ProN", "HGMaruGothicMPRO", "Yu Gothic Medium", "Yu Gothic", sans-serif !important;
+    /* 基本テキスト色：濃いグレー(#555) */
+    html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, label {
+        font-family: 'Kosugi Maru', sans-serif !important;
+        color: #555555 !important;
         -webkit-font-smoothing: antialiased;
     }
-
-    /* 2. 基本背景とテキスト色（黒を使わず濃いグレー） */
+    
+    /* 背景色を白に固定 */
     [data-testid="stAppViewContainer"] {
         background-color: #ffffff !important;
     }
-    .stApp, p, label {
-        color: #555555 !important; /* 目に優しい濃いグレー */
-    }
-    h1, h2, h3, h4 {
-        color: #555555 !important;
-    }
 
-    /* 3. レイアウト調整 */
+    /* レイアウト調整 */
     .block-container {
-        padding-top: 0.5rem !important;
+        padding-top: 0.2rem !important; /* 上部余白を少し詰める */
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
 
-    /* 4. ラジオボタン（選択中を緑にする設定を復元） */
-    /* 未選択のテキスト */
-    div[role="radiogroup"] label:not(:has(input:checked)) p {
-        color: #cccccc !important;
+    /* タイトル・キャプション調整 (バランス修正) */
+    h1 {
+        font-size: 1.1rem !important; /* サイズを少し抑える */
+        margin-top: 0.2rem !important;
+        margin-bottom: 0 !important;
     }
-    /* 未選択の丸 */
-    div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
-        border: 2px solid #e0e0e0 !important;
-        background-color: #fafafa !important;
-    }
-    
-    /* ★選択中のテキスト（名前含む）を緑に！ */
-    div[role="radiogroup"] label:has(input:checked) p {
-        color: #4CAF50 !important;
-        font-weight: bold !important;
-    }
-    /* 選択中の丸 */
-    div[role="radiogroup"] label:has(input:checked) > div:first-child {
-        border-color: #4CAF50 !important;
-        background-color: #4CAF50 !important;
-    }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child svg {
-        fill: white !important;
-    }
-    
-    /* 5. ドロップダウン（緑背景・白文字を復元） */
-    div[data-baseweb="select"] > div {
-        background-color: #556b2f !important; /* モスグリーン */
-        border-color: #556b2f !important;
-        color: #ffffff !important; /* 白文字 */
-    }
-    div[data-baseweb="select"] span {
-        color: #ffffff !important; /* 選択中の文字も白 */
-    }
-    div[data-baseweb="select"] svg {
-        fill: #ffffff !important; /* 矢印も白 */
-    }
-    /* リストの中身 */
-    div[data-baseweb="popover"] div, div[data-baseweb="popover"] li {
-        color: #ffffff !important;
-        background-color: #556b2f !important;
+    div[data-testid="stCaptionContainer"] p {
+        font-size: 0.85rem !important;
+        margin-top: 0 !important;
+        color: #666666 !important;
     }
 
-    /* 6. ボタンデザイン */
+    /* ============================
+       入力フォームのデザイン
+    ============================ */
+    /* ラジオボタン (選択時グリーン) */
+    div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
+    div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
+        border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
+    }
+    div[role="radiogroup"] label:has(input:checked) p { 
+        color: #4CAF50 !important; 
+        font-weight: bold !important; 
+    }
+    div[role="radiogroup"] label:has(input:checked) > div:first-child {
+        border-color: #4CAF50 !important; 
+        background-color: #4CAF50 !important;
+    }
+    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { 
+        fill: #ffffff !important; 
+    }
+    div[role="radiogroup"] p { font-size: 1rem !important; }
+
+    /* ドロップダウンリスト（モスグリーン背景・白文字） */
+    div[data-baseweb="select"] > div {
+        background-color: #556b2f !important; 
+        border-color: #556b2f !important; 
+        color: #ffffff !important;
+    }
+    div[data-baseweb="select"] span { 
+        color: #ffffff !important; 
+    }
+    div[data-baseweb="select"] svg { 
+        fill: #ffffff !important; 
+    }
+    
+    /* リストが開いた時 */
+    div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
+        background-color: #556b2f !important;
+    }
+    div[data-baseweb="popover"] li {
+        color: #ffffff !important;
+    }
+    div[data-baseweb="popover"] li:hover {
+        background-color: #3b4a1c !important;
+    }
+
+    /* ============================
+       ボタンの基本デザイン
+    ============================ */
     div.stButton > button {
+        border: none !important;
         border-radius: 8px !important;
         font-weight: bold !important;
         width: 100% !important;
         padding: 0.8em 0 !important;
         font-size: 1.1rem !important;
-        border: none !important;
+        white-space: nowrap !important;
     }
 
-    /* 7. 情報カードのデザイン */
-    .info-card {
-        background-color: #f9f9f9;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 1.2rem;
-        margin-bottom: 1.5rem;
-    }
-    .info-row {
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px dashed #ddd; padding: 0.8rem 0;
-    }
-    .info-row:last-child { border-bottom: none; }
-    .info-label { font-size: 0.9rem; color: #888 !important; }
-    .info-val { font-size: 1.1rem; font-weight: bold; color: #555 !important; }
-
-    /* ステータスボックス */
-    .status-green {
-        background-color: #e8f5e9;
-        border: 2px solid #4CAF50;
-        border-radius: 10px;
-        padding: 1.5rem;
-        text-align: center;
-        margin-bottom: 1.5rem;
-    }
-    .status-alert {
-        background-color: #fff9c4;
-        border: 2px solid #fbc02d;
-        border-radius: 10px;
-        padding: 1rem;
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-    .status-info {
+    /* ============================
+       情報ボックスのデザイン
+    ============================ */
+    .info-box-blue {
         background-color: #e3f2fd;
-        border: 1px solid #2196f3;
-        border-radius: 10px;
+        border: 1px solid #90caf9;
+        color: #0d47a1 !important;
         padding: 1rem;
+        border-radius: 8px;
         text-align: center;
         margin-bottom: 1rem;
-        color: #0d47a1 !important;
         font-weight: bold;
     }
+    /* 警告ボックス (文字色をオレンジに戻す) */
+    .info-box-yellow {
+        background-color: #fff9c4;
+        border: 1px solid #fff59d;
+        color: #f57f17 !important; /* ★ここをオレンジに修正 */
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    .status-box-green {
+        background-color: #e8f5e9;
+        border: 2px solid #4CAF50;
+        color: #1b5e20 !important;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    /* 予約確認カード */
+    .confirm-card {
+        background-color: #f9f9f9;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .card-row {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px dashed #ddd;
+        padding: 0.5rem 0;
+    }
+    .card-row:last-child { border-bottom: none; }
+    .card-label { color: #666 !important; font-weight: bold; }
+    .card-value { color: #333 !important; font-weight: bold; font-size: 1.1rem; }
+    
     </style>
 """, unsafe_allow_html=True)
 
@@ -185,11 +207,11 @@ with col2:
     else:
         st.error("ロゴ画像なし")
 
-# --- タイトル ---
+# --- タイトル (HTMLで直接記述してバランス調整) ---
 st.markdown("""
-    <h1 style='text-align: center; margin-top: -10px; line-height: 1.4; color:#555555 !important;'>
+    <h1 style='text-align: center; margin-top: -5px; line-height: 1.3; color: #555555 !important; font-size: 1.1rem;'>
         事前予約アプリ
-        <div style='font-size: 0.9rem; margin-top: 5px; color: #888888 !important;'>〜大村家 専用〜</div>
+        <div style='font-size: 0.85rem; margin-top: 3px; color: #666666 !important;'>〜大村家 専用〜</div>
     </h1>
 """, unsafe_allow_html=True)
 
@@ -222,12 +244,12 @@ if st.session_state.step == 'input':
             label_visibility="collapsed"
         )
 
-    # 次へボタン（ピンク背景・白文字）
+    # ピンクボタン（文字色を白に修正）
     st.markdown("""
         <style>
         div.stButton > button {
             background-color: #f6adad !important;
-            color: #ffffff !important;
+            color: #ffffff !important; /* ★ここを白に修正 */
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         </style>
@@ -244,44 +266,39 @@ if st.session_state.step == 'input':
 elif st.session_state.step == 'confirm':
     scroll_to_top()
 
-    # 青い案内
     st.markdown("""
-        <div class="status-info">
+        <div class="info-box-blue">
             まだ予約は始まっていません。<br>下のボタンで待機を開始してください。
         </div>
     """, unsafe_allow_html=True)
 
-    # 予約内容カード
     selected_child = CHILD_OPTIONS[st.session_state.target_child_val]
     selected_time = TIME_OPTIONS[st.session_state.target_time_val]
     
     st.markdown(f"""
-        <div class="info-card">
-            <div style="text-align:center; font-weight:bold; color:#4CAF50; border-bottom:2px solid #eee; margin-bottom:10px; padding-bottom:5px;">
-                📋 予約内容の確認
+        <div class="confirm-card">
+            <div style="text-align:center; font-weight:bold; border-bottom:2px solid #4CAF50; margin-bottom:10px; padding-bottom:5px; color:#555;">📋 予約内容の確認</div>
+            <div class="card-row">
+                <span class="card-label">予約者</span>
+                <span class="card-value">{selected_child.split(' ')[0]} {selected_child.split(' ')[1]}</span>
             </div>
-            <div class="info-row">
-                <span class="info-label">予約者</span>
-                <span class="info-val">{selected_child.split(' ')[0]} {selected_child.split(' ')[1]}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">希望時間</span>
-                <span class="info-val" style="color:#e91e63 !important; font-size:1.4rem;">{selected_time}</span>
+            <div class="card-row">
+                <span class="card-label">希望時間</span>
+                <span class="card-value" style="color:#e91e63 !important; font-size:1.3rem;">{selected_time}</span>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
-    # ボタンエリア
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([1, 1.5])
     
     with col1:
-        # 訂正ボタン（白背景・グレー文字）
+        # 訂正ボタン（白背景・濃いグレー文字）
         st.markdown("""
             <style>
             div[data-testid="column"]:nth-of-type(1) div.stButton > button {
                 background-color: #ffffff !important;
                 color: #555555 !important;
-                border: 2px solid #eeeeee !important;
+                border: 1px solid #cccccc !important;
                 box-shadow: none !important;
             }
             </style>
@@ -291,18 +308,18 @@ elif st.session_state.step == 'confirm':
             st.rerun()
 
     with col2:
-        # 開始ボタン（ピンク背景・白文字）
+        # 開始ボタン（ピンク背景・文字色を白に修正）
         st.markdown("""
             <style>
             div[data-testid="column"]:nth-of-type(2) div.stButton > button {
                 background-color: #f6adad !important;
-                color: #ffffff !important;
+                color: #ffffff !important; /* ★ここを白に修正 */
                 border: none !important;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
             }
             </style>
         """, unsafe_allow_html=True)
-        if st.button("🚀 待機開始"):
+        if st.button("🚀 待機モード開始"):
             st.session_state.step = 'running'
             st.rerun()
 
@@ -321,9 +338,9 @@ elif st.session_state.step == 'running':
     TARGET_M_JP = f"{TARGET_H}時{TARGET_M}分"
     START_URL = "https://shimura-kids.com/yoyaku/php/line_login.php"
 
-    # 警告（濃いオレンジ文字で視認性確保）
+    # 警告ボックス（文字色オレンジ）
     st.markdown("""
-        <div class="status-alert" style="color:#f57f17 !important;">
+        <div class="info-box-yellow">
             ⚠️ 画面がスリープにならないように<br>設定してから寝てね！
         </div>
     """, unsafe_allow_html=True)
@@ -337,28 +354,24 @@ elif st.session_state.step == 'running':
         target_dt += datetime.timedelta(days=1)
     login_start_dt = target_dt - datetime.timedelta(minutes=10)
 
-    # 待機中ステータス
     status_placeholder.markdown(f"""
-        <div class="status-green">
-            <h2 style="margin:0; color:#2e7d32 !important; font-size:1.6rem;">💤 待機中...</h2>
-            <div style="margin:15px 0; font-size:1.1rem; color:#555;">
-                <b>{login_start_dt.strftime('%H:%M')}</b> に先行ログイン
-            </div>
-            <div style="border-top:1px dashed #4CAF50; padding-top:10px; font-size:0.9rem; color:#555;">
-                予約対象: {TARGET_NAME} 様 ({selected_time})
-            </div>
+        <div class="status-box-green">
+            <h2 style="margin:0; color:#2e7d32 !important;">💤 待機中...</h2>
+            <p style="font-size:1.1rem; margin:10px 0;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします</p>
+            <hr style="border-top: 1px dashed #4CAF50;">
+            <p style="margin:0;">予約: <b>{TARGET_NAME}</b> 様 ({selected_time})</p>
         </div>
     """, unsafe_allow_html=True)
 
-    # 訂正・中止ボタン（白背景・グレー文字）
     st.write("")
+    # 訂正ボタン（白背景・グレー文字）
     st.markdown("""
         <style>
         div.stButton > button {
             background-color: #ffffff !important;
             color: #555555 !important;
             border: 1px solid #cccccc !important;
-            box-shadow: none !important;
+            font-size: 0.9rem !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -368,14 +381,12 @@ elif st.session_state.step == 'running':
         st.rerun()
     st.caption("※ 反応しない場合はブラウザを再読み込みしてください")
 
-    # --- 待機ループ ---
     while True:
         now = datetime.datetime.now(jst)
         wait_sec = (login_start_dt - now).total_seconds()
         if wait_sec <= 0: break
         time.sleep(1)
 
-    # --- 先行ログイン処理 ---
     status_placeholder.info("🚀 先行ログインを実行中...")
     
     def get_driver():
@@ -434,6 +445,8 @@ elif st.session_state.step == 'running':
         next_btn.click()
         
         final_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(., '予 約')]")))
+        
+        # 👇 本番稼働時はコメントアウトを外す
         # final_btn.click()
         
         st.balloons()

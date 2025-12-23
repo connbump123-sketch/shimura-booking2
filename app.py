@@ -12,8 +12,8 @@ import os
 
 # --- ページ設定 ---
 st.set_page_config(
-    page_title="しむら小児科予約アプリ",
-    page_icon="",
+    page_title="しむら小児科予約",
+    page_icon="🏥",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
@@ -39,40 +39,60 @@ st.markdown("""
         padding-bottom: 20rem !important; 
         max-width: 100% !important;
     }
-    
-    /* タイトル非表示（ロゴに置き換えるため） */
-    h1 { display: none !important; }
 
     /* ============================
-       デザイン要素
+       タイトル・キャプション周りの余白削減
     ============================ */
-    /* キャプション */
+    /* タイトル（事前予約アプリ...）の設定 */
+    h1 {
+        display: block !important; /* 表示させる */
+        font-size: 1.1rem !important;
+        text-align: center !important;
+        color: #555555 !important; /* 指定色 */
+        margin-top: 0.5rem !important;
+        margin-bottom: 0 !important; /* 下の余白を消す */
+        padding: 0 !important;
+    }
+
+    /* キャプション（前日の夜に...）の設定 */
     div[data-testid="stCaptionContainer"] p {
         font-size: 0.8rem !important;
         color: #555555 !important;
         text-align: center;
-        margin-top: 0.5rem !important;
-        margin-bottom: 1.5rem !important;
+        margin-top: 0 !important; /* 上の余白を消す */
+        margin-bottom: 1rem !important; /* 下の余白を最小限に */
+        line-height: 1.4 !important;
     }
     
-    /* 見出し */
+    /* 余計なパディングを削除して上に詰める */
+    div[data-testid="stCaptionContainer"] {
+        padding-top: 0 !important;
+        margin-top: -0.5rem !important;
+    }
+
+    /* ============================
+       見出し・ラベルのデザイン (#555555統一)
+    ============================ */
     h3 {
         font-size: 1.1rem !important;
         font-weight: bold !important;
-        margin-top: 1rem !important;
+        margin-top: 0.5rem !important;
         margin-bottom: 0.5rem !important;
-        color: #555555 !important;
+        color: #555555 !important; /* 指定色 */
     }
     
     /* カスタムラベル（2. 予約希望時間用） */
     .custom-label {
         font-size: 1.1rem;
         font-weight: bold;
-        color: #555555;
+        color: #555555; /* 指定色 */
         margin-bottom: 0.3rem;
         font-family: 'Kosugi Maru', sans-serif;
     }
 
+    /* ============================
+       入力フォームのデザイン
+    ============================ */
     /* ラジオボタン */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
@@ -92,21 +112,20 @@ st.markdown("""
     div[data-baseweb="select"] span { color: #ffffff !important; font-size: 1rem !important; }
     div[data-baseweb="select"] svg { fill: #ffffff !important; }
     
-    div[data-baseweb="popover"] div[role="listbox"], div[data-baseweb="popover"] ul {
-        background-color: #556b2f !important;
-    }
-    div[data-baseweb="popover"] li, div[data-baseweb="popover"] div {
-        color: #ffffff !important; font-size: 1rem !important;
-    }
-    div[data-baseweb="popover"] li:hover, div[data-baseweb="popover"] li[aria-selected="true"] {
-        background-color: #3b4a1c !important;
-    }
-
-    /* 実行ボタン */
+    /* ============================
+       実行ボタン（改行防止）
+    ============================ */
     div.stButton > button {
-        background-color: #f6adad !important; color: white !important; border: none !important;
-        border-radius: 8px !important; font-weight: bold !important; width: 100% !important;
-        padding: 0.8em 1em !important; margin-top: 1rem !important; font-size: 1.1rem !important;
+        background-color: #f6adad !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: bold !important;
+        width: 100% !important;
+        padding: 0.8em 0 !important; /* 左右のパディングを減らす */
+        margin-top: 1rem !important;
+        font-size: 1.1rem !important;
+        white-space: nowrap !important; /* ★ここが重要：改行させない */
     }
     
     /* 背景設定 */
@@ -114,25 +133,23 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- ヘッダー（ロゴ表示：JPG/PNG両対応版） ---
+# --- ヘッダー（ロゴ表示） ---
 logo_file = None
-# 画像を探す（png, jpg, jpegのどれかがあればOK）
-if os.path.exists("logo.png"):
-    logo_file = "logo.png"
-elif os.path.exists("logo.jpg"):
-    logo_file = "logo.jpg"
-elif os.path.exists("logo.jpeg"):
-    logo_file = "logo.jpeg"
+if os.path.exists("logo.png"): logo_file = "logo.png"
+elif os.path.exists("logo.jpg"): logo_file = "logo.jpg"
+elif os.path.exists("logo.jpeg"): logo_file = "logo.jpeg"
 
 if logo_file:
     col1, col2, col3 = st.columns([1, 4, 1])
     with col2:
         st.image(logo_file, use_container_width=True)
 else:
-    # 画像がない場合のエラー表示
-    st.markdown("<h2 style='text-align: center; color: #4CAF50;'>🏥 しむら小児科</h2>", unsafe_allow_html=True)
-    st.error("⚠️ 画像が見つかりません。'logo.jpg' または 'logo.png' という名前でアップロードしてください。")
+    st.error("⚠️ 画像が見つかりません。")
 
+# タイトル（表示・変更）
+st.title("事前予約アプリ　〜大村家 専用〜")
+
+# キャプション
 st.caption("前日の夜にセットし、画面をつけたまま充電して寝てください。")
 
 # --- 1. 予約設定 ---

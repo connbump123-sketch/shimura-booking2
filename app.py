@@ -59,7 +59,7 @@ st.markdown("""
     }
     
     /* 基本テキスト色：濃いグレー(#555) */
-    html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, label {
+    html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, label, li {
         font-family: 'Kosugi Maru', sans-serif !important;
         color: #555555 !important;
         -webkit-font-smoothing: antialiased;
@@ -67,7 +67,7 @@ st.markdown("""
 
     /* レイアウト調整：上部余白 */
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
@@ -84,11 +84,20 @@ st.markdown("""
         margin-top: 0 !important;
         color: #666666 !important;
     }
+    
+    /* ロゴ画像を中央寄せにするためのCSS */
+    div[data-testid="stImage"] {
+        display: flex;
+        justify-content: center;
+    }
+    div[data-testid="stImage"] img {
+        max-width: 80% !important;
+    }
 
     /* ============================
        2. 【重要】スマホでのボタン横並び強制設定
     ============================ */
-    /* カラムを画面幅の50%ずつに強制分割 */
+    /* Streamlitのcolumnはスマホで縦になるため、無理やり50%幅にして並べる */
     div[data-testid="column"] {
         width: 50% !important;
         flex: 1 1 auto !important;
@@ -123,12 +132,9 @@ st.markdown("""
         border-color: #556b2f !important; 
         color: #ffffff !important;
     }
-    /* ★文字色を白に強制★ */
-    div[data-baseweb="select"] span { 
+    /* ★中身の文字色を白に強制★ */
+    div[data-baseweb="select"] * { 
         color: #ffffff !important; 
-    }
-    /* ★矢印アイコンを白に強制★ */
-    div[data-baseweb="select"] svg { 
         fill: #ffffff !important; 
     }
     
@@ -151,7 +157,7 @@ st.markdown("""
         font-weight: bold !important;
         width: 100% !important;
         padding: 0.8em 0 !important;
-        font-size: 1.0rem !important;
+        font-size: 0.95rem !important; /* スマホで並んだ時に溢れないサイズ */
         white-space: nowrap !important;
         border: none !important;
     }
@@ -211,18 +217,17 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- ヘッダー（ロゴ）: 必ず最初に描画 ---
+# --- ヘッダー（ロゴ）: columnsを使わずst.imageだけで表示 ---
 logo_file = None
 if os.path.exists("logo.png"): logo_file = "logo.png"
 elif os.path.exists("logo.jpg"): logo_file = "logo.jpg"
 elif os.path.exists("logo.jpeg"): logo_file = "logo.jpeg"
 
-col1, col2, col3 = st.columns([1, 4, 1])
-with col2:
-    if logo_file:
-        st.image(logo_file, use_container_width=True)
-    else:
-        st.error("ロゴ画像なし")
+if logo_file:
+    # CSSで中央寄せしているので、そのまま表示するだけでOK
+    st.image(logo_file, width=300) 
+else:
+    st.error("ロゴ画像なし")
 
 # --- タイトル ---
 st.markdown("""

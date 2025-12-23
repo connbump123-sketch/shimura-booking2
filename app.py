@@ -19,33 +19,34 @@ st.set_page_config(
 # --- デザイン調整 (CSS) ---
 st.markdown("""
     <style>
-    /* 1. 全体レイアウト & 上下の余白調整 */
-    /* 上部の余白を極限まで削り(0.5rem)、下部に巨大な余白(15rem)を確保 */
+    /* 1. 全体レイアウト調整 */
+    /* 上部の余白を3remに広げてヘッダー被りを解消 */
+    /* 下部の余白を20rem確保し、リストが下側に開くスペースを作る */
     .block-container {
-        padding-top: 0.5rem !important;
-        padding-bottom: 15rem !important; 
+        padding-top: 3rem !important;
+        padding-bottom: 20rem !important; 
         max-width: 100% !important;
     }
     
-    /* 2. タイトル（しむら小児科 事前予約）の極小化 */
+    /* 2. タイトルの極小化 */
     h1 {
-        font-size: 0.9rem !important; /* サイズを半分程度に */
+        font-size: 0.9rem !important;
         font-weight: bold !important;
-        margin-bottom: 0 !important; /* 下の余白を消す */
+        margin-bottom: 0 !important;
         padding-bottom: 0 !important;
         color: #555555 !important; /* 濃いめのグレー */
         font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif !important;
     }
     
-    /* 3. キャプション（前日の夜に～）のデザイン */
+    /* 3. キャプション（前日の夜に～） */
     div[data-testid="stCaptionContainer"] p {
         font-size: 0.75rem !important;
         color: #555555 !important; /* 濃いめのグレー */
-        margin-top: 0.2rem !important; /* 上の余白を詰める */
-        margin-bottom: 1rem !important;
+        margin-top: 0.2rem !important;
+        margin-bottom: 0.5rem !important;
     }
     
-    /* 4. 見出し（1. 予約設定 など）のデザイン */
+    /* 4. 見出し（1. 予約設定 など） */
     h3 {
         font-size: 1.0rem !important;
         font-weight: bold !important;
@@ -65,7 +66,7 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
     }
 
-    /* 5. ラジオボタンのデザイン */
+    /* 5. ラジオボタン */
     /* 未選択（薄いグレー） */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
@@ -107,7 +108,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# タイトル（サイズ縮小適用済み）
+# タイトル
 st.title("🏥 しむら小児科 事前予約")
 st.caption("前日の夜にセットし、画面をつけたまま充電して寝てください。")
 
@@ -123,10 +124,8 @@ with st.container():
         label_visibility="collapsed"
     )
 
-    # スペース調整（最小限に）
-    st.write("") 
-
     # 時間選択
+    st.write("") # 少し隙間
     st.markdown('<div class="custom-label">2. 予約希望時間</div>', unsafe_allow_html=True)
     
     target_time_str = st.selectbox(

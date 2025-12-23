@@ -7,6 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from PIL import Image
+import os
 
 # --- ページ設定 ---
 st.set_page_config(
@@ -22,51 +24,38 @@ st.markdown("""
     /* ============================
        フォント設定（丸ゴシック化）
     ============================ */
-    /* アプリ全体のフォントを丸ゴシック系に統一 */
+    @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
+    
     html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, button, input, select, label {
-        font-family: "Hiragino Maru Gothic ProN", "HGMaruGothicMPRO", "Yu Gothic Medium", "Yu Gothic", sans-serif !important;
+        font-family: 'Kosugi Maru', "Hiragino Maru Gothic ProN", "HGMaruGothicMPRO", "Yu Gothic Medium", "Yu Gothic", sans-serif !important;
         -webkit-font-smoothing: antialiased;
     }
 
     /* ============================
-       レイアウト・ロゴ設定
+       レイアウト設定
     ============================ */
-    /* 1. 全体レイアウト調整 */
     .block-container {
-        padding-top: 1.5rem !important; /* ロゴのために上部余白を調整 */
+        padding-top: 1rem !important;
         padding-bottom: 20rem !important; 
         max-width: 100% !important;
     }
     
-    /* 2. 元のテキストタイトルを非表示に */
-    h1 {
-        display: none !important;
-    }
-    
-    /* 3. ロゴ画像のスタイル */
-    .logo-img {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 80%;       /* スマホで見やすいサイズに調整 */
-        max-width: 300px; /* PCで大きすぎないように制限 */
-        height: auto;
-        margin-bottom: 0.5rem; /* 下のキャプションとの間隔 */
-    }
+    /* タイトル非表示（ロゴに置き換えるため） */
+    h1 { display: none !important; }
 
     /* ============================
-       その他のデザイン要素
+       デザイン要素
     ============================ */
-    /* 4. キャプション（前日の夜に～） */
+    /* キャプション */
     div[data-testid="stCaptionContainer"] p {
         font-size: 0.8rem !important;
         color: #555555 !important;
-        text-align: center; /* 中央揃え */
-        margin-top: 0 !important;
+        text-align: center;
+        margin-top: 0.5rem !important;
         margin-bottom: 1.5rem !important;
     }
     
-    /* 5. 見出し（1. 予約設定 など） */
+    /* 見出し */
     h3 {
         font-size: 1.1rem !important;
         font-weight: bold !important;
@@ -81,9 +70,10 @@ st.markdown("""
         font-weight: bold;
         color: #555555;
         margin-bottom: 0.3rem;
+        font-family: 'Kosugi Maru', sans-serif;
     }
 
-    /* 6. ラジオボタン */
+    /* ラジオボタン */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
     div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
         border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
@@ -93,12 +83,9 @@ st.markdown("""
         border-color: #4CAF50 !important; background-color: #4CAF50 !important;
     }
     div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
-    /* ラジオボタンの選択肢の文字サイズを少し大きく */
-    div[role="radiogroup"] p {
-        font-size: 1rem !important;
-    }
+    div[role="radiogroup"] p { font-size: 1rem !important; }
 
-    /* 7. ドロップダウンリスト */
+    /* ドロップダウンリスト */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; border-color: #556b2f !important; color: #ffffff !important;
     }
@@ -115,23 +102,28 @@ st.markdown("""
         background-color: #3b4a1c !important;
     }
 
-    /* 8. 実行ボタン */
+    /* 実行ボタン */
     div.stButton > button {
         background-color: #f6adad !important; color: white !important; border: none !important;
         border-radius: 8px !important; font-weight: bold !important; width: 100% !important;
         padding: 0.8em 1em !important; margin-top: 1rem !important; font-size: 1.1rem !important;
     }
     
-    /* 9. 背景設定 */
+    /* 背景設定 */
     .stApp { background-color: #ffffff !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- ヘッダー（ロゴ表示） ---
-# st.title()の代わりにHTMLで画像を表示
-st.markdown('<img src="https://raw.githubusercontent.com/connbump123-sketch/shimura-booking2/main/logo.png" class="logo-img">', unsafe_allow_html=True)
-# ※注意: 上記URLの "connbump123-sketch/shimura-booking2" の部分は、
-# あなたの実際のGitHubの「ユーザー名/リポジトリ名」に合わせて修正してください！
+# --- ヘッダー（ロゴ表示：修正版） ---
+# 画像ファイルが存在するかチェックして表示
+if os.path.exists("logo.png"):
+    col1, col2, col3 = st.columns([1, 4, 1]) # 中央寄せのためのカラム
+    with col2:
+        st.image("logo.png", use_container_width=True)
+else:
+    # 万が一画像がない場合はテキストを表示
+    st.markdown("<h2 style='text-align: center; color: #4CAF50;'>🏥 しむら小児科</h2>", unsafe_allow_html=True)
+    st.error("⚠️ 'logo.png' が見つかりません。GitHubにアップロードしてください。")
 
 st.caption("前日の夜にセットし、画面をつけたまま充電して寝てください。")
 

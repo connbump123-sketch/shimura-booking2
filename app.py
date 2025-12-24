@@ -51,46 +51,35 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
     /* ============================
-       1. 丸ゴシックの完全強制 & ダークモード無効化
+       1. ダークモード完全無効化 & 基本設定
     ============================ */
     :root {
         color-scheme: light only !important;
     }
-    
-    /* 全称セレクタ(*)を使って、あらゆる要素のフォントを丸ゴシックに強制 */
-    *, html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, label, li, button, input, select {
-        font-family: 'Kosugi Maru', sans-serif !important;
-    }
-
-    /* 背景と文字色の基本設定 */
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
         background-color: #ffffff !important;
+        font-family: 'Kosugi Maru', sans-serif !important;
+        color: #555555 !important;
     }
     
-    /* 基本テキスト色 */
-    p, span, div, label, h1, h2, h3 {
-        color: #555555 !important;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    /* レイアウト調整 */
+    /* レイアウト調整：上部余白を極限まで詰める */
     .block-container {
-        /* 上部の余白を少し詰める */
-        padding-top: 3rem !important;
+        padding-top: 0.1rem !important; /* ★ここを大幅に削減★ */
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
 
-    /* タイトル調整（空白を詰める） */
+    /* タイトル調整（空白を削減） */
     h1 {
         font-size: 1.1rem !important;
-        margin-top: 0.1rem !important; /* 上の空白を削減 */
-        margin-bottom: 0.1rem !important; /* 下の空白を削減 */
-        line-height: 1.4 !important;
+        margin-top: -10px !important; /* マイナスマージンで詰める */
+        margin-bottom: 0 !important;
+        line-height: 1.2 !important;
+        color: #555555 !important;
     }
     div[data-testid="stCaptionContainer"] p {
         font-size: 0.85rem !important;
-        margin-top: 0.1rem !important; /* 上の空白を削減 */
+        margin-top: 0 !important;
         margin-bottom: 0.5rem !important;
         color: #666666 !important;
     }
@@ -99,14 +88,14 @@ st.markdown("""
     div[data-testid="stImage"] {
         display: flex;
         justify-content: center;
-        margin-bottom: 0.5rem !important; /* ロゴ下の空白を調整 */
+        margin-bottom: 0 !important;
     }
     div[data-testid="stImage"] img {
         max-width: 80% !important;
     }
 
     /* ============================
-       2. カラム設定
+       2. カラム設定（ボタン用）
     ============================ */
     div[data-testid="column"] {
         padding: 0 3px !important;
@@ -133,7 +122,7 @@ st.markdown("""
         fill: #ffffff !important; 
     }
 
-    /* ドロップダウンリスト */
+    /* ドロップダウンリスト（物理的強制） */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; 
         border-color: #556b2f !important; 
@@ -156,7 +145,7 @@ st.markdown("""
     }
 
     /* ============================
-       4. ボタンの基本デザイン
+       4. ボタンの基本デザイン（黒化防止）
     ============================ */
     div.stButton > button {
         border-radius: 8px !important;
@@ -183,7 +172,7 @@ st.markdown("""
     }
     .info-box-blue * { color: #0d47a1 !important; }
 
-    /* 警告ボックス (文字色オレンジ) - 改行禁止を追加 */
+    /* 警告ボックス (改行禁止) */
     .info-box-yellow {
         background-color: #fff9c4;
         border: 1px solid #fff59d;
@@ -193,7 +182,7 @@ st.markdown("""
         text-align: center;
         margin-bottom: 1rem;
         font-weight: bold;
-        white-space: nowrap !important; /* ★ここを追加★ */
+        white-space: nowrap !important; /* ★改行禁止★ */
     }
     .info-box-yellow * { color: #f57f17 !important; }
 
@@ -241,7 +230,7 @@ else:
 
 # --- タイトル ---
 st.markdown("""
-    <h1 style='text-align: center; line-height: 1.3;'>
+    <h1 style='text-align: center;'>
         事前予約アプリ
         <div style='font-size: 0.85rem; margin-top: 3px; color: #666666 !important;'>〜大村家 専用〜</div>
     </h1>
@@ -300,11 +289,11 @@ if st.session_state.step == 'input':
 elif st.session_state.step == 'confirm':
     scroll_to_top()
     
-    # ★Step2専用：ボタン配置＆色設定★
-    # カラム構成が[空, ボタン, ボタン]になるため、2番目と3番目のカラムを指定
+    # ★Step2専用：ボタン配置＆色設定（右寄せ配置）★
+    # カラム構成: [空(大), ボタン(左), ボタン(右)]
     st.markdown("""
         <style>
-        /* 左ボタン（訂正）：白背景・黒文字 */
+        /* ボタン(左)：白背景・黒文字 */
         div[data-testid="column"]:nth-of-type(2) div.stButton > button {
             background-color: #ffffff !important;
             color: #555555 !important;
@@ -312,7 +301,7 @@ elif st.session_state.step == 'confirm':
         }
         div[data-testid="column"]:nth-of-type(2) div.stButton > button * { color: #555555 !important; }
         
-        /* 右ボタン（開始）：ピンク背景・白文字 */
+        /* ボタン(右)：ピンク背景・白文字 */
         div[data-testid="column"]:nth-of-type(3) div.stButton > button {
             background-color: #f6adad !important;
             color: #ffffff !important;
@@ -346,8 +335,9 @@ elif st.session_state.step == 'confirm':
         </div>
     """, unsafe_allow_html=True)
 
-    # ★ボタン配置を変更: 左に空白カラムを作って右寄せにする★
-    col_space, col_btn_l, col_btn_r = st.columns([1.5, 1, 1])
+    # ★ボタン配置を右寄せに変更★
+    # [空白(1.2), 訂正(1), 開始(1)] の比率で配置
+    col_space, col_btn_l, col_btn_r = st.columns([1.2, 1, 1])
     
     with col_btn_l:
         if st.button("訂正する"):
@@ -413,9 +403,9 @@ elif st.session_state.step == 'running':
 
     st.write("")
     
-    # 待機画面のボタン配置（中央寄せ）
-    _, col_btn_center, _ = st.columns([0.15, 1, 0.15])
-    with col_btn_center:
+    # 待機画面のボタン配置（左端）
+    col_btn, _ = st.columns([1, 2])
+    with col_btn:
         if st.button("訂正・中止する"):
             st.session_state.step = 'input'
             st.rerun()

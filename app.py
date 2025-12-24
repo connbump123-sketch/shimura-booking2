@@ -75,38 +75,41 @@ st.markdown("""
 
     /* レイアウト調整 */
     .block-container {
-        padding-top: 4rem !important; /* ロゴが隠れないよう広めに確保 */
+        /* 上部の余白を少し詰める */
+        padding-top: 3rem !important;
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
 
-    /* タイトル調整 */
+    /* タイトル調整（空白を詰める） */
     h1 {
         font-size: 1.1rem !important;
-        margin-top: 0.5rem !important;
-        margin-bottom: 0 !important;
+        margin-top: 0.1rem !important; /* 上の空白を削減 */
+        margin-bottom: 0.1rem !important; /* 下の空白を削減 */
         line-height: 1.4 !important;
     }
     div[data-testid="stCaptionContainer"] p {
         font-size: 0.85rem !important;
-        margin-top: 0 !important;
+        margin-top: 0.1rem !important; /* 上の空白を削減 */
+        margin-bottom: 0.5rem !important;
         color: #666666 !important;
     }
     
-    /* ロゴ画像を中央寄せ */
+    /* ロゴ画像を中央寄せ（下の空白も調整） */
     div[data-testid="stImage"] {
         display: flex;
         justify-content: center;
+        margin-bottom: 0.5rem !important; /* ロゴ下の空白を調整 */
     }
     div[data-testid="stImage"] img {
         max-width: 80% !important;
     }
 
     /* ============================
-       2. カラム設定（隙間調整はPython側で行うためCSS制限解除）
+       2. カラム設定
     ============================ */
     div[data-testid="column"] {
-        padding: 0 3px !important; /* ボタン同士を少し近づける */
+        padding: 0 3px !important;
     }
     
     /* ============================
@@ -130,13 +133,12 @@ st.markdown("""
         fill: #ffffff !important; 
     }
 
-    /* ドロップダウンリスト（モスグリーン背景・白文字） */
+    /* ドロップダウンリスト */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; 
         border-color: #556b2f !important; 
         color: #ffffff !important;
     }
-    /* リスト内の文字色を白に強制 */
     div[data-baseweb="select"] * { 
         color: #ffffff !important; 
         fill: #ffffff !important; 
@@ -181,7 +183,7 @@ st.markdown("""
     }
     .info-box-blue * { color: #0d47a1 !important; }
 
-    /* 警告ボックス (文字色オレンジ) */
+    /* 警告ボックス (文字色オレンジ) - 改行禁止を追加 */
     .info-box-yellow {
         background-color: #fff9c4;
         border: 1px solid #fff59d;
@@ -191,6 +193,7 @@ st.markdown("""
         text-align: center;
         margin-bottom: 1rem;
         font-weight: bold;
+        white-space: nowrap !important; /* ★ここを追加★ */
     }
     .info-box-yellow * { color: #f57f17 !important; }
 
@@ -238,7 +241,7 @@ else:
 
 # --- タイトル ---
 st.markdown("""
-    <h1 style='text-align: center; margin-top: -5px; line-height: 1.3;'>
+    <h1 style='text-align: center; line-height: 1.3;'>
         事前予約アプリ
         <div style='font-size: 0.85rem; margin-top: 3px; color: #666666 !important;'>〜大村家 専用〜</div>
     </h1>
@@ -297,10 +300,11 @@ if st.session_state.step == 'input':
 elif st.session_state.step == 'confirm':
     scroll_to_top()
     
-    # ★Step2専用：ボタン配置＆色設定（中身まで指定）★
+    # ★Step2専用：ボタン配置＆色設定★
+    # カラム構成が[空, ボタン, ボタン]になるため、2番目と3番目のカラムを指定
     st.markdown("""
         <style>
-        /* 左ボタン：白背景・黒文字 */
+        /* 左ボタン（訂正）：白背景・黒文字 */
         div[data-testid="column"]:nth-of-type(2) div.stButton > button {
             background-color: #ffffff !important;
             color: #555555 !important;
@@ -308,7 +312,7 @@ elif st.session_state.step == 'confirm':
         }
         div[data-testid="column"]:nth-of-type(2) div.stButton > button * { color: #555555 !important; }
         
-        /* 右ボタン：ピンク背景・白文字 */
+        /* 右ボタン（開始）：ピンク背景・白文字 */
         div[data-testid="column"]:nth-of-type(3) div.stButton > button {
             background-color: #f6adad !important;
             color: #ffffff !important;
@@ -342,16 +346,14 @@ elif st.session_state.step == 'confirm':
         </div>
     """, unsafe_allow_html=True)
 
-    # ★ここがポイント！ 4カラム構成にして両端をクッションにする★
-    # [クッション, ボタン左, ボタン右, クッション]
-    # 比率: 0.15 : 1 : 1 : 0.15 (ボタンを少し内側に寄せる)
-    _, col_btn1, col_btn2, _ = st.columns([0.15, 1, 1, 0.15])
+    # ★ボタン配置を変更: 左に空白カラムを作って右寄せにする★
+    col_space, col_btn_l, col_btn_r = st.columns([1.5, 1, 1])
     
-    with col_btn1:
+    with col_btn_l:
         if st.button("訂正する"):
             st.session_state.step = 'input'
             st.rerun()
-    with col_btn2:
+    with col_btn_r:
         if st.button("🚀 待機開始"):
             st.session_state.step = 'running'
             st.rerun()
@@ -383,6 +385,7 @@ elif st.session_state.step == 'running':
     TARGET_M_JP = f"{TARGET_H}時{TARGET_M}分"
     START_URL = "https://shimura-kids.com/yoyaku/php/line_login.php"
 
+    # 警告ボックス（CSSで nowrap に設定済み）
     st.markdown("""
         <div class="info-box-yellow">
             ⚠️ 画面がスリープにならないように<br>設定してから寝てね！
@@ -398,9 +401,10 @@ elif st.session_state.step == 'running':
         target_dt += datetime.timedelta(days=1)
     login_start_dt = target_dt - datetime.timedelta(minutes=10)
 
+    # 待機ボックス（「待機中」を改行しないように設定）
     status_placeholder.markdown(f"""
         <div class="status-box-green">
-            <h2 style="margin:0; color:#2e7d32 !important;">💤 待機中...</h2>
+            <h2 style="margin:0; color:#2e7d32 !important; white-space: nowrap;">💤 待機中...</h2>
             <p style="font-size:1.1rem; margin:10px 0;"><b>{login_start_dt.strftime('%H:%M')}</b> に先行ログインします</p>
             <hr style="border-top: 1px dashed #4CAF50;">
             <p style="margin:0;">予約: <b>{TARGET_NAME}</b> 様 ({selected_time})</p>
@@ -409,7 +413,7 @@ elif st.session_state.step == 'running':
 
     st.write("")
     
-    # 待機画面のボタンも内側に寄せる
+    # 待機画面のボタン配置（中央寄せ）
     _, col_btn_center, _ = st.columns([0.15, 1, 0.15])
     with col_btn_center:
         if st.button("訂正・中止する"):
@@ -419,6 +423,7 @@ elif st.session_state.step == 'running':
     st.caption("※ 反応しない場合はブラウザを再読み込みしてください")
 
     while True:
+        # ... (省略: 待機ロジックはそのまま) ...
         now = datetime.datetime.now(jst)
         wait_sec = (login_start_dt - now).total_seconds()
         if wait_sec <= 0: break
@@ -426,6 +431,7 @@ elif st.session_state.step == 'running':
 
     status_placeholder.info("🚀 先行ログインを実行中...")
     
+    # ... (省略: Seleniumなどのロジックはそのまま) ...
     def get_driver():
         options = Options()
         options.add_argument('--headless')

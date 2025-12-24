@@ -51,30 +51,41 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
     
     /* ============================
-       1. ダークモード完全無効化 & レイアウト
+       1. 丸ゴシックの完全強制 & ダークモード無効化
     ============================ */
     :root {
         color-scheme: light only !important;
     }
-    html, body, .stApp {
-        background-color: #ffffff !important;
+    
+    /* 全称セレクタ(*)を使って、あらゆる要素のフォントを丸ゴシックに強制 */
+    *, html, body, [class*="css"], font, span, div, p, h1, h2, h3, h4, h5, h6, label, li, button, input, select {
         font-family: 'Kosugi Maru', sans-serif !important;
-        color: #555555 !important;
+    }
+
+    /* 背景と文字色の基本設定 */
+    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+        background-color: #ffffff !important;
     }
     
-    /* コンテンツ全体を大きく下にずらす（ロゴ隠れ防止） */
+    /* 基本テキスト色 */
+    p, span, div, label, h1, h2, h3 {
+        color: #555555 !important;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* レイアウト調整 */
     .block-container {
-        padding-top: 5rem !important; /* 十分な余白を確保 */
+        padding-top: 4rem !important; /* ロゴが隠れないよう広めに確保 */
         padding-bottom: 5rem !important; 
         max-width: 100% !important;
     }
 
-    /* タイトル */
+    /* タイトル調整 */
     h1 {
         font-size: 1.1rem !important;
         margin-top: 0.5rem !important;
         margin-bottom: 0 !important;
-        color: #555555 !important;
+        line-height: 1.4 !important;
     }
     div[data-testid="stCaptionContainer"] p {
         font-size: 0.85rem !important;
@@ -82,7 +93,7 @@ st.markdown("""
         color: #666666 !important;
     }
     
-    /* ロゴ画像の中央寄せ */
+    /* ロゴ画像を中央寄せ */
     div[data-testid="stImage"] {
         display: flex;
         justify-content: center;
@@ -92,38 +103,40 @@ st.markdown("""
     }
 
     /* ============================
-       2. 【最重要】ボタン横並び強制 (親コンテナ制御)
+       2. カラム設定（隙間調整はPython側で行うためCSS制限解除）
     ============================ */
-    /* 横並びの親箱を「折り返し禁止」にする */
-    div[data-testid="stHorizontalBlock"] {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-    }
-    /* 子カラムの幅を強制指定 */
     div[data-testid="column"] {
-        flex: 1 1 50% !important;
-        width: 50% !important;
-        min-width: 0 !important;
-        padding: 0 5px !important;
+        padding: 0 3px !important; /* ボタン同士を少し近づける */
     }
     
     /* ============================
-       3. 入力フォーム (リスト白文字化)
+       3. 入力フォームのデザイン
     ============================ */
     /* ラジオボタン */
     div[role="radiogroup"] label:not(:has(input:checked)) p { color: #cccccc !important; }
-    div[role="radiogroup"] label:has(input:checked) p { color: #4CAF50 !important; font-weight: bold !important; }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child {
-        border-color: #4CAF50 !important; background-color: #4CAF50 !important;
+    div[role="radiogroup"] label:not(:has(input:checked)) > div:first-child {
+        border: 2px solid #e0e0e0 !important; background-color: #fafafa !important;
     }
-    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { fill: #ffffff !important; }
+    /* 選択時グリーン */
+    div[role="radiogroup"] label:has(input:checked) p { 
+        color: #4CAF50 !important; 
+        font-weight: bold !important; 
+    }
+    div[role="radiogroup"] label:has(input:checked) > div:first-child {
+        border-color: #4CAF50 !important; 
+        background-color: #4CAF50 !important;
+    }
+    div[role="radiogroup"] label:has(input:checked) > div:first-child svg { 
+        fill: #ffffff !important; 
+    }
 
-    /* ドロップダウンリスト（中身を完全に白にする） */
+    /* ドロップダウンリスト（モスグリーン背景・白文字） */
     div[data-baseweb="select"] > div {
         background-color: #556b2f !important; 
         border-color: #556b2f !important; 
         color: #ffffff !important;
     }
+    /* リスト内の文字色を白に強制 */
     div[data-baseweb="select"] * { 
         color: #ffffff !important; 
         fill: #ffffff !important; 
@@ -141,21 +154,20 @@ st.markdown("""
     }
 
     /* ============================
-       4. ボタン基本リセット (黒化防止)
+       4. ボタンの基本デザイン
     ============================ */
     div.stButton > button {
-        width: 100%;
         border-radius: 8px !important;
         font-weight: bold !important;
+        width: 100% !important;
         padding: 0.8em 0 !important;
-        font-size: 0.9rem !important;
+        font-size: 0.95rem !important;
         white-space: nowrap !important;
-        background-image: none !important; /* グラデーション除去 */
-        box-shadow: none !important;
+        border: none !important;
     }
-
+    
     /* ============================
-       5. 情報ボックス
+       5. 情報ボックスのデザイン
     ============================ */
     .info-box-blue {
         background-color: #e3f2fd;
@@ -167,6 +179,9 @@ st.markdown("""
         margin-bottom: 1rem;
         font-weight: bold;
     }
+    .info-box-blue * { color: #0d47a1 !important; }
+
+    /* 警告ボックス (文字色オレンジ) */
     .info-box-yellow {
         background-color: #fff9c4;
         border: 1px solid #fff59d;
@@ -177,6 +192,8 @@ st.markdown("""
         margin-bottom: 1rem;
         font-weight: bold;
     }
+    .info-box-yellow * { color: #f57f17 !important; }
+
     .status-box-green {
         background-color: #e8f5e9;
         border: 2px solid #4CAF50;
@@ -186,6 +203,8 @@ st.markdown("""
         text-align: center;
         margin-bottom: 1rem;
     }
+    .status-box-green * { color: #1b5e20 !important; }
+    
     .confirm-card {
         background-color: #f9f9f9;
         border: 1px solid #eee;
@@ -193,10 +212,16 @@ st.markdown("""
         padding: 1rem;
         margin-bottom: 1.5rem;
     }
-    .card-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #ddd; padding: 0.5rem 0; }
+    .card-row {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px dashed #ddd;
+        padding: 0.5rem 0;
+    }
     .card-row:last-child { border-bottom: none; }
     .card-label { color: #666 !important; font-weight: bold; }
     .card-value { color: #333 !important; font-weight: bold; font-size: 1.1rem; }
+    
     </style>
 """, unsafe_allow_html=True)
 
@@ -229,11 +254,11 @@ TIME_OPTIONS = [f"{h:02d}:{m:02d}" for h in range(9, 18) for m in [0, 15, 30, 45
 
 # --- Step 1: 入力画面 ---
 if st.session_state.step == 'input':
-    # ★Step1専用：ピンクボタン (backgroundプロパティで強力上書き) ★
+    # ★Step1専用：ピンクボタンの中身を完全に白にする★
     st.markdown("""
         <style>
         div.stButton > button {
-            background: #f6adad !important;
+            background-color: #f6adad !important;
             color: #ffffff !important;
             border: none !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
@@ -272,25 +297,25 @@ if st.session_state.step == 'input':
 elif st.session_state.step == 'confirm':
     scroll_to_top()
     
-    # ★Step2専用：横並びボタンの色分け (backgroundプロパティ使用) ★
+    # ★Step2専用：ボタン配置＆色設定（中身まで指定）★
     st.markdown("""
         <style>
-        /* 左ボタン：白 */
-        div[data-testid="column"]:nth-of-type(1) div.stButton > button {
-            background: #ffffff !important;
+        /* 左ボタン：白背景・黒文字 */
+        div[data-testid="column"]:nth-of-type(2) div.stButton > button {
+            background-color: #ffffff !important;
             color: #555555 !important;
             border: 1px solid #cccccc !important;
         }
-        div[data-testid="column"]:nth-of-type(1) div.stButton > button * { color: #555555 !important; }
+        div[data-testid="column"]:nth-of-type(2) div.stButton > button * { color: #555555 !important; }
         
-        /* 右ボタン：ピンク */
-        div[data-testid="column"]:nth-of-type(2) div.stButton > button {
-            background: #f6adad !important;
+        /* 右ボタン：ピンク背景・白文字 */
+        div[data-testid="column"]:nth-of-type(3) div.stButton > button {
+            background-color: #f6adad !important;
             color: #ffffff !important;
             border: none !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
         }
-        div[data-testid="column"]:nth-of-type(2) div.stButton > button * { color: #ffffff !important; }
+        div[data-testid="column"]:nth-of-type(3) div.stButton > button * { color: #ffffff !important; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -317,12 +342,16 @@ elif st.session_state.step == 'confirm':
         </div>
     """, unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
-    with col1:
+    # ★ここがポイント！ 4カラム構成にして両端をクッションにする★
+    # [クッション, ボタン左, ボタン右, クッション]
+    # 比率: 0.15 : 1 : 1 : 0.15 (ボタンを少し内側に寄せる)
+    _, col_btn1, col_btn2, _ = st.columns([0.15, 1, 1, 0.15])
+    
+    with col_btn1:
         if st.button("訂正する"):
             st.session_state.step = 'input'
             st.rerun()
-    with col2:
+    with col_btn2:
         if st.button("🚀 待機開始"):
             st.session_state.step = 'running'
             st.rerun()
@@ -331,11 +360,11 @@ elif st.session_state.step == 'confirm':
 elif st.session_state.step == 'running':
     scroll_to_top()
     
-    # ★Step3専用：訂正ボタン(白) ★
+    # ★Step3専用：訂正ボタン(白)CSSを注入★
     st.markdown("""
         <style>
         div.stButton > button {
-            background: #ffffff !important;
+            background-color: #ffffff !important;
             color: #555555 !important;
             border: 1px solid #cccccc !important;
         }
@@ -379,9 +408,14 @@ elif st.session_state.step == 'running':
     """, unsafe_allow_html=True)
 
     st.write("")
-    if st.button("訂正・中止する"):
-        st.session_state.step = 'input'
-        st.rerun()
+    
+    # 待機画面のボタンも内側に寄せる
+    _, col_btn_center, _ = st.columns([0.15, 1, 0.15])
+    with col_btn_center:
+        if st.button("訂正・中止する"):
+            st.session_state.step = 'input'
+            st.rerun()
+            
     st.caption("※ 反応しない場合はブラウザを再読み込みしてください")
 
     while True:
